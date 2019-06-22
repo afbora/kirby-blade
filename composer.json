@@ -2,7 +2,7 @@
     "name": "afbora/kirby-blade",
     "description": "Enable Laravel Blade Template Engine for Kirby 3",
     "keywords": [
-        "kirby", "kirby-3", "kirby-plugin" ,"kirby-blade", "blade", "laravel", "view", "template", "template-engine"
+        "kirby", "kirby-3", "kirby3-plugin", "kirby-plugin" ,"kirby-blade", "blade", "laravel", "view", "template", "template-engine"
     ],
     "version": "1.0",
     "type": "kirby-plugin",

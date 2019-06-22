@@ -105,7 +105,7 @@ But you can create your own:
 
 ```php
 'afbora.blade.directives' => [
-    'greeting' => function ($text) 
+    'greeting' => function ($text)
     {
         return "<?php echo 'Hello: ' . $text ?>";
     },
@@ -118,7 +118,7 @@ Like directives, you can create your own if statements:
 
 ```php
 'afbora.blade.ifs' => [
-    'logged' => function () 
+    'logged' => function ()
     {
         return !!kirby()->user();
     },
@@ -135,4 +135,4 @@ After declaration you can use it like:
 @endlogged
 ```
 
-_Developed from [Kirby Blade Repository](https://github.com/beebmx/kirby-blade) maintained by @beebmx_
+Developed from [Kirby Blade Repository](https://github.com/beebmx/kirby-blade) maintained by @beebmx
