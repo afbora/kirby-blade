@@ -40,33 +40,33 @@ class Template extends KirbyTemplate
      */
     public function file(): ?string
     {
-        if ($this->hasDefaultType() === true) 
+        if ($this->hasDefaultType() === true)
         {
-            try 
+            try
             {
                 // Try the default template in the default template directory.
                 return F::realpath($this->getFilename(), $this->root());
-            } 
-            catch (Exception $e) 
+            }
+            catch (Exception $e)
             {
                 //
             }
             // Look for the default template provided by an extension.
             $path = Kirby::instance()->extension($this->store(), $this->name());
-            if ($path !== null) 
+            if ($path !== null)
             {
                 return $path;
             }
         }
-        
+
         $name = $this->name() . '.' . $this->type();
-        
-        try 
+
+        try
         {
             // Try the template with type extension in the default template directory.
             return F::realpath($this->getFilename(), $this->root());
-        } 
-        catch (Exception $e) 
+        }
+        catch (Exception $e)
         {
             // Look for the template with type extension provided by an extension.
             // This might be null if the template does not exist.
@@ -80,7 +80,7 @@ class Template extends KirbyTemplate
      */
     public function render(array $data = []): string
     {
-        if ($this->isBlade()) 
+        if ($this->isBlade())
         {
             $this->blade = new Blade(
                 $this->templates,
@@ -90,8 +90,8 @@ class Template extends KirbyTemplate
             $this->setIfStatements();
 
             return $this->blade->make($this->name, $data);
-        } 
-        else 
+        }
+        else
         {
             return Tpl::load($this->file(), $data);
         }
@@ -99,7 +99,7 @@ class Template extends KirbyTemplate
 
     public function setViewDirectory()
     {
-        if (!file_exists($this->views)) 
+        if (!file_exists($this->views))
         {
             Dir::make($this->views);
         }
@@ -125,6 +125,11 @@ class Template extends KirbyTemplate
             }
 
             return "<?php echo css($url) ?>";
+        });
+
+        $this->blade->compiler()->directive('dump', function (mixed $variable)
+        {
+            return "<?php dump($variable) ?>";
         });
 
         $this->blade->compiler()->directive('e', function (mixed $condition, mixed $value, mixed $alternative = null)
@@ -157,6 +162,20 @@ class Template extends KirbyTemplate
             return "<?php echo gist($url) ?>";
         });
 
+        $this->blade->compiler()->directive('go', function (string $url = null, int $code = null)
+        {
+            if($url)
+            {
+                return "<?php go($url) ?>";
+            }
+            elseif ($url and $code)
+            {
+                return "<?php go($url, $code) ?>";
+            }
+
+            return "<?php go() ?>";
+        });
+
         $this->blade->compiler()->directive('h', function (string $string, bool $keepTags = false)
         {
             if($keepTags)
@@ -177,6 +196,11 @@ class Template extends KirbyTemplate
             return "<?php echo html($string) ?>";
         });
 
+        $this->blade->compiler()->directive('image', function (string $path, $attr)
+        {
+            return "<?php echo image($path)->{$attr}() ?>";
+        });
+
         $this->blade->compiler()->directive('js', function ($url, array $options = [])
         {
             if($options)
@@ -187,11 +211,6 @@ class Template extends KirbyTemplate
             return "<?php echo js($url) ?>";
         });
 
-        $this->blade->compiler()->directive('image', function (string $path)
-        {
-            return "<?php echo image($path) ?>";
-        });
-
         $this->blade->compiler()->directive('kirbytag', function (mixed $type, string $value, array $attr = [])
         {
             if($attr)
@@ -200,6 +219,16 @@ class Template extends KirbyTemplate
             }
 
             return "<?php echo kirbytag($type, $value) ?>";
+        });
+
+        $this->blade->compiler()->directive('kirbytags', function (string $text = null, array $data = [])
+        {
+            if($data)
+            {
+                return "<?php echo kirbytags($text, $data) ?>";
+            }
+
+            return "<?php echo kirbytags($text) ?>";
         });
 
         $this->blade->compiler()->directive('kirbytext', function (string $text, array $data = [])
@@ -221,7 +250,7 @@ class Template extends KirbyTemplate
 
             return "<?php echo kirbytextinline($text) ?>";
         });
-        
+
         $this->blade->compiler()->directive('kt', function (string $text, array $data = [])
         {
             if($data)
@@ -247,6 +276,10 @@ class Template extends KirbyTemplate
             return "<?php echo option($key) ?>";
         });
 
+        $this->blade->compiler()->directive('page', function (string $id, $attr)
+        {
+            return "<?php echo page($id)->{$attr}() ?>";
+        });
 
         $this->blade->compiler()->directive('param', function (string $key, string $fallback = null)
         {
@@ -256,6 +289,11 @@ class Template extends KirbyTemplate
             }
 
             return "<?php echo param($key) ?>";
+        });
+
+        $this->blade->compiler()->directive('site', function ($attr)
+        {
+            return "<?php echo site()->{$attr}() ?>";
         });
 
         $this->blade->compiler()->directive('size', function (mixed $value)
@@ -272,10 +310,10 @@ class Template extends KirbyTemplate
         {
             if($data)
             {
-                return "<?php echo snippet($name, $data) ?>";
+                return "<?php snippet($name, $data) ?>";
             }
 
-            return "<?php echo snippet($name) ?>";
+            return "<?php snippet($name) ?>";
         });
 
         $this->blade->compiler()->directive('svg', function (string $file)
@@ -298,6 +336,24 @@ class Template extends KirbyTemplate
             return "<?php echo tc($key, $count) ?>";
         });
 
+        $this->blade->compiler()->directive('tt', function (string $key, string $fallback = null, array $replace = null, string $locale = null)
+        {
+            if($fallback)
+            {
+                return "<?php echo tt($key, $fallback) ?>";
+            }
+            elseif($fallback and $replace)
+            {
+                return "<?php echo tt($key, $fallback, $replace) ?>";
+            }
+            elseif($fallback and $replace and $locale)
+            {
+                return "<?php echo tt($key, $fallback, $replace, $locale) ?>";
+            }
+
+            return "<?php echo tt($key) ?>";
+        });
+
         $this->blade->compiler()->directive('twitter', function (string $username, string $text = null, string $title = null, string $class = null)
         {
             if($text)
@@ -313,7 +369,7 @@ class Template extends KirbyTemplate
                 return "<?php echo twitter($username, $text, $title, $class) ?>";
             }
 
-            return "<?php echo twitter($username) ?>";            
+            return "<?php echo twitter($username) ?>";
         });
 
         $this->blade->compiler()->directive('u', function (string $path = null, mixed $options = null)
@@ -387,7 +443,7 @@ class Template extends KirbyTemplate
             return "<?php echo youtube($url) ?>";
         });
 
-        foreach ($directives = option('afbora.blade.directives', []) as $directive => $callback) 
+        foreach ($directives = option('afbora.blade.directives', []) as $directive => $callback)
         {
             $this->blade->compiler()->directive($directive, $callback);
         }
@@ -395,7 +451,7 @@ class Template extends KirbyTemplate
 
     protected function setIfStatements()
     {
-        foreach ($statements = option('afbora.blade.ifs', []) as $statement => $callback) 
+        foreach ($statements = option('afbora.blade.ifs', []) as $statement => $callback)
         {
             $this->blade->compiler()->if($statement, $callback);
         }
@@ -403,11 +459,11 @@ class Template extends KirbyTemplate
 
     public function getFilename()
     {
-        if ($this->isBlade()) 
+        if ($this->isBlade())
         {
             return $this->root() . '/' . $this->name() . '.' . $this->bladeExtension();
-        } 
-        else 
+        }
+        else
         {
             return $this->root() . '/' . $this->name() . '.' . $this->extension();
         }
@@ -431,12 +487,12 @@ class Template extends KirbyTemplate
     protected function getPathViews()
     {
         $path = option('afbora.blade.views');
-        
-        if (is_callable($path)) 
+
+        if (is_callable($path))
         {
             return $path();
         }
-        
+
         return $path;
     }
 }

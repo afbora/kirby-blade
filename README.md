@@ -77,28 +77,34 @@ By default Kirby Blade comes with following directives:
 
 ```php
 @asset($path)
-@css($path)
 @csrf()
+@css($path)
+@dump($variable)
 @e($condition, $value, $alternative)
 @get($key, $default)
 @gist($url)
-@h($string)
-@html($string)
+@go($url, $code)
+@h($string, $keepTags)
+@html($string, $keepTags)
 @js($path)
-@image($path)
-@kirbytag($type, $value)
-@kirbytext($text)
+@image($path, $attr) // @image('forrest.jpg', 'url')
+@kirbytag($type, $value, $attr)
+@kirbytags($text, $data)
+@kirbytext($text, $data)
 @kirbytextinline($text)
 @kt($text)
 @markdown($text)
 @option($key, $default)
+@page($key, $attr) // @page('blog', 'title')
 @param($key, $fallback)
+@site($attr) // @site(title')
 @size($value)
 @smartypants($text)
 @snippet($name, $data)
 @svg($file)
 @t($key, $fallback)
 @tc($key, $count)
+@tt($key, $fallback, $replace, $locale)
 @u($path, $options)
 @url($path, $options)
 @video($url, $options, $attr)
@@ -117,6 +123,10 @@ But you can create your own:
     },
 ],
 ```
+
+Kirby Helpers Documentation:
+
+https://getkirby.com/docs/reference/templates/helpers
 
 ### If Statements
 
@@ -141,4 +151,4 @@ After declaration you can use it like:
 @endlogged
 ```
 
-Developed from [Kirby Blade Repository](https://github.com/beebmx/kirby-blade) maintained by @beebmx
+Developed from [Kirby Blade Repository](https://github.com/beebmx/kirby-blade) maintained by [@beebmx](https://github.com/beebmx)
