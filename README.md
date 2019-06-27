@@ -12,6 +12,12 @@ This package enable [Laravel Blade](https://laravel.com/docs/5.8/blade) for your
 composer require afbora/kirby-blade
 ```
 
+### Add as git submodule
+
+```ssh
+git submodule add https://github.com/afbora/kirby-blade.git site/plugins/kirby-blade
+```
+
 ## What is Blade?
 
 According to Laravel Blade documentation is:
