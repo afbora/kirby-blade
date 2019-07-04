@@ -43,21 +43,20 @@ The default values of the package are:
 
 | Option | Default | Values | Description |
 |:--|:--|:--|:--|
+| afbora.blade.templates | site/templates | (string) | Location of the templates |
 | afbora.blade.views | site/cache/views | (string) | Location of the views cached |
 | afbora.blade.directives | [] | (array) | Array with the custom directives |
 | afbora.blade.ifs | [] | (array) | Array with the custom if statements |
 
 All the values can be updated in the `config.php` file.
 
-### Views
+### Templates
 
-All the views generated are stored in `site/cache/views` directory or wherever you define your `cache` directory, but you can change this easily:
+Default templates folder is `site/templates` directory or wherever you define your `templates` directory, but you can change this easily:
 
 ```php
-'afbora.blade.views' => '/site/storage/views',
+'afbora.blade.templates' => '/theme/default/templates',
 ```
-
-### Templates
 
 You can find Kirby Starterkit blade templates in repository `/templates` folder.
 
@@ -76,6 +75,14 @@ You can find Kirby Starterkit blade templates in repository `/templates` folder.
 ├── note.blade.php
 ├── notes.blade.php
 └── photography.blade.php
+```
+
+### Views
+
+All the views generated are stored in `site/cache/views` directory or wherever you define your `cache` directory, but you can change this easily:
+
+```php
+'afbora.blade.views' => '/site/storage/views',
 ```
 
 ### Directives
