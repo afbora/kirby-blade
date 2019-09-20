@@ -1,11 +1,11 @@
 # Kirby Blade
 
-[![Source](https://img.shields.io/badge/source-afbora/kirby--blade-blue.svg)](https://github.com/afbora/kirby-blade)
-![Download](https://img.shields.io/packagist/dt/afbora/kirby-blade.svg?style=flat-square)
-![Open Issues](https://img.shields.io/github/issues-raw/afbora/kirby-blade.svg?style=flat-square)
-![Last Commit](https://img.shields.io/github/last-commit/afbora/kirby-blade.svg)
-![Tag Version](https://img.shields.io/github/tag/afbora/kirby-blade.svg?style=flat-square)
-![License](https://img.shields.io/github/license/afbora/kirby-blade.svg?style=flat-square)
+[![Source](https://img.shields.io/badge/source-afbora/kirby--blade-blue?style=flat-square)](https://github.com/afbora/kirby-blade)
+[![Download](https://img.shields.io/packagist/dt/afbora/kirby-blade?style=flat-square)](https://github.com/afbora/kirby-blade)
+[![Open Issues](https://img.shields.io/github/issues-raw/afbora/kirby-blade?style=flat-square)](https://github.com/afbora/kirby-blade)
+[![Last Commit](https://img.shields.io/github/last-commit/afbora/kirby-blade?style=flat-square)](https://github.com/afbora/kirby-blade)
+[![Release](https://img.shields.io/github/v/release/afbora/kirby-blade?style=flat-square)](https://github.com/afbora/kirby-blade)
+[![License](https://img.shields.io/github/license/afbora/kirby-blade?style=flat-square)](https://github.com/afbora/kirby-blade)
 
 Kirby Blade use Laravel `illuminate/view` 5.8+ package and compatible with Kirby 3.
 
@@ -47,6 +47,7 @@ The default values of the package are:
 | afbora.blade.views | site/cache/views | (string) | Location of the views cached |
 | afbora.blade.directives | [] | (array) | Array with the custom directives |
 | afbora.blade.ifs | [] | (array) | Array with the custom if statements |
+| afbora.blade.minify | false | (boolean) | Enable/disable minify HTML output |
 
 All the values can be updated in the `config.php` file.
 

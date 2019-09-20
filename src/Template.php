@@ -72,10 +72,30 @@ class Template extends KirbyTemplate
             $this->setDirectives();
             $this->setIfStatements();
 
-            return $this->blade->make($this->name, $data);
+            $html = $this->blade->make($this->name, $data);
         } else {
-            return Tpl::load($this->file(), $data);
+            $html = Tpl::load($this->file(), $data);
         }
+
+        if (option('afbora.blade.minify', false) === true) {
+            $search = array(
+                '/\>[^\S ]+/s',     // strip whitespaces after tags, except space
+                '/[^\S ]+\</s',     // strip whitespaces before tags, except space
+                '/(\s)+/s',         // shorten multiple whitespace sequences
+                '/<!--(.|\s)*?-->/' // Remove HTML comments
+            );
+
+            $replace = array(
+                '>',
+                '<',
+                '\\1',
+                ''
+            );
+
+            $html = preg_replace($search, $replace, $html);
+        }
+
+        return $html;
     }
 
     public function setViewDirectory()
@@ -356,7 +376,9 @@ class Template extends KirbyTemplate
             return $this->templates;
         }
 
-        if ($optionPath = option('afbora.blade.templates') && is_dir($optionPath)) {
+        $optionPath = option('afbora.blade.templates');
+
+        if ($optionPath !== null && is_dir($optionPath)) {
             if (is_callable($optionPath)) {
                 return $optionPath();
             }
