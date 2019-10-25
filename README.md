@@ -42,12 +42,13 @@ All the documentation about Laravel Blade is in the [official documentation](htt
 The default values of the package are:
 
 | Option | Default | Values | Description |
-|:--|:--|:--|:--|
+|:---|:---|:---|:---|
 | afbora.blade.templates | site/templates | (string) | Location of the templates |
 | afbora.blade.views | site/cache/views | (string) | Location of the views cached |
 | afbora.blade.directives | [] | (array) | Array with the custom directives |
 | afbora.blade.ifs | [] | (array) | Array with the custom if statements |
-| afbora.blade.minify | false | (boolean) | Enable/disable minify HTML output |
+| afbora.blade.minify.enabled | false | (boolean) | Enable/disable minify HTML output |
+| afbora.blade.minify.options | [] | (array) | Minify supported options |
 
 All the values can be updated in the `config.php` file.
 
@@ -166,4 +167,69 @@ After declaration you can use it like:
 @endlogged
 ```
 
-Developed from [Kirby Blade Repository](https://github.com/beebmx/kirby-blade) maintained by [@beebmx](https://github.com/beebmx)
+### Filters
+
+**Usage**
+
+Following line output: `KIRBY`
+
+````
+{{ "Kirby" | upper }}
+````
+
+With custom filters: `quote`
+
+````
+{{ $page->title() | quote }}
+````
+
+You can add your own custom filters as follows from `config.php`:
+
+```php
+'afbora.blade.filters' => [
+    'quote' => function ($value) {
+        return '"' . $value . '"';
+    },
+]
+```
+
+You can get list of filters here: [thepinecode/blade-filter](https://github.com/thepinecode/blade-filters#the-available-filters) 
+
+### Minify
+
+**Setup**
+
+```php
+'afbora.blade.minify.enabled' => true,
+'afbora.blade.minify.options' => [
+    'doOptimizeViaHtmlDomParser' => true, // set true/false or remove line to default
+    'doRemoveSpacesBetweenTags'  => false // set true/false or remove line to default
+],
+```
+
+**Available Minify Options**
+
+| Option | Description |
+|:---|:---|
+| doOptimizeViaHtmlDomParser | optimize html via "HtmlDomParser()" |
+| doRemoveComments | remove default HTML comments (depends on "doOptimizeViaHtmlDomParser(true)") |
+| doSumUpWhitespace | sum-up extra whitespace from the Dom (depends on "doOptimizeViaHtmlDomParser(true)") |
+| doRemoveWhitespaceAroundTags | remove whitespace around tags (depends on "doOptimizeViaHtmlDomParser(true)") |
+| doOptimizeAttributes | optimize html attributes (depends on "doOptimizeViaHtmlDomParser(true)") |
+| doRemoveHttpPrefixFromAttributes | remove optional "http:"-prefix from attributes (depends on "doOptimizeAttributes(true)") |
+| doRemoveDefaultAttributes | remove defaults (depends on "doOptimizeAttributes(true)" | disabled by default) |
+| doRemoveDeprecatedAnchorName | remove deprecated anchor-jump (depends on "doOptimizeAttributes(true)") |
+| doRemoveDeprecatedScriptCharsetAttribute | remove deprecated charset-attribute - the browser will use the charset from the HTTP-Header, anyway (depends on "doOptimizeAttributes(true)") |
+| doRemoveDeprecatedTypeFromScriptTag | remove deprecated script-mime-types (depends on "doOptimizeAttributes(true)") |
+| doRemoveDeprecatedTypeFromStylesheetLink | remove "type=text/css" for css links (depends on "doOptimizeAttributes(true)") |
+| doRemoveEmptyAttributes | remove some empty attributes (depends on "doOptimizeAttributes(true)") |
+| doRemoveValueFromEmptyInput | remove 'value=""' from empty <input> (depends on "doOptimizeAttributes(true)") |
+| doSortCssClassNames | sort css-class-names, for better gzip results (depends on "doOptimizeAttributes(true)") |
+| doSortHtmlAttributes | sort html-attributes, for better gzip results (depends on "doOptimizeAttributes(true)") |
+| doRemoveSpacesBetweenTags | remove more (aggressive) spaces in the dom (disabled by default) |
+| doRemoveOmittedQuotes | remove quotes e.g. class="lall" => class=lall |
+| doRemoveOmittedHtmlTags | remove ommitted html tags e.g. \<p\>lall\<\/p\> => \<p\>lall |
+
+You can get detailed information from `HtmlMin` library: [voku/HtmlMin](https://github.com/voku/HtmlMin#options)
+
+*Developed from [Kirby Blade Repository](https://github.com/beebmx/kirby-blade) maintained by [@beebmx](https://github.com/beebmx)*

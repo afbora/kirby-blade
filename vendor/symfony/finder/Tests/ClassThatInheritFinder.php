@@ -9,16 +9,17 @@
  * file that was distributed with this source code.
  */
 
-namespace Symfony\Component\Debug\Tests;
+namespace Symfony\Component\Finder\Tests;
 
-use Symfony\Component\Debug\ExceptionHandler;
+use Symfony\Component\Finder\Finder;
 
-class MockExceptionHandler extends ExceptionHandler
+class ClassThatInheritFinder extends Finder
 {
-    public $e;
-
-    public function handle(\Exception $e)
+    /**
+     * @return $this
+     */
+    public function sortByName()
     {
-        $this->e = $e;
+        parent::sortByName();
     }
 }

@@ -2,9 +2,18 @@
     "name": "afbora/kirby-blade",
     "description": "Enable Laravel Blade Template Engine for Kirby 3",
     "keywords": [
-        "kirby", "kirby-3", "kirby3-plugin", "kirby-plugin" ,"kirby-blade", "blade", "laravel", "view", "template", "template-engine"
+        "kirby",
+        "kirby-3",
+        "kirby3-plugin",
+        "kirby-plugin",
+        "kirby-blade",
+        "blade",
+        "laravel",
+        "view",
+        "template",
+        "template-engine"
     ],
-    "version": "1.4",
+    "version": "1.5.0",
     "type": "kirby-plugin",
     "license": "MIT",
     "authors": [
@@ -16,7 +25,9 @@
     "require": {
         "php": "^7.1.3",
         "getkirby/composer-installer": "^1.1",
-        "illuminate/view": "^5.8"
+        "illuminate/view": "^5.8",
+        "thepinecode/blade-filters": "^0.4",
+        "voku/html-min": "^4.0"
     },
     "config": {
         "optimize-autoloader": true,
@@ -25,7 +36,6 @@
     },
     "autoload": {
         "files": [
-            "config.php",
             "helpers.php"
         ],
         "psr-4": {

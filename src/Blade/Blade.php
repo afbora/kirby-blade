@@ -3,6 +3,7 @@
 namespace Afbora\Blade;
 
 use Afbora\View\ViewServiceProvider;
+use Pine\BladeFilters\BladeFiltersServiceProvider;
 use Illuminate\Container\Container;
 use Illuminate\Contracts\Container\Container as ContainerInterface;
 use Illuminate\Contracts\View\Factory as FactoryContract;
@@ -33,7 +34,7 @@ class Blade implements FactoryContract
     {
         $this->container = $container ?: new Container;
 
-        $this->setupContainer((array) $viewPaths, $cachePath);
+        $this->setupContainer((array)$viewPaths, $cachePath);
         (new ViewServiceProvider($this->container))->register();
 
         $this->factory = $this->container->get('view');

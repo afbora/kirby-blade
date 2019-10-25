@@ -17,6 +17,7 @@ use Carbon\CarbonInterval;
 use Carbon\CarbonPeriod;
 use Closure;
 use DateTime;
+use DateTimeImmutable;
 
 /**
  * Trait Converter.
@@ -65,6 +66,8 @@ trait Converter
     }
 
     /**
+     * Returns the formatted date string on success or FALSE on failure.
+     *
      * @see https://php.net/manual/en/datetime.format.php
      *
      * @param string $format
@@ -524,6 +527,21 @@ trait Converter
     }
 
     /**
+     * Return native toDateTimeImmutable PHP object matching the current instance.
+     *
+     * @example
+     * ```
+     * var_dump(Carbon::now()->toDateTimeImmutable());
+     * ```
+     *
+     * @return DateTimeImmutable
+     */
+    public function toDateTimeImmutable()
+    {
+        return new DateTimeImmutable($this->rawFormat('Y-m-d H:i:s.u'), $this->getTimezone());
+    }
+
+    /**
      * @alias toDateTime
      *
      * Return native DateTime PHP object matching the current instance.
@@ -543,9 +561,9 @@ trait Converter
     /**
      * Create a iterable CarbonPeriod object from current date to a given end date (and optional interval).
      *
-     * @param \DateTimeInterface|Carbon|CarbonImmutable|null $end      period end date
-     * @param int|\DateInterval|string|null                  $interval period default interval or number of the given $unit
-     * @param string|null                                    $unit     if specified, $interval must be an integer
+     * @param \DateTimeInterface|Carbon|CarbonImmutable|int|null $end      period end date or recurrences count if int
+     * @param int|\DateInterval|string|null                      $interval period default interval or number of the given $unit
+     * @param string|null                                        $unit     if specified, $interval must be an integer
      *
      * @return CarbonPeriod
      */
@@ -561,7 +579,9 @@ trait Converter
             $period->setDateInterval($interval);
         }
 
-        if ($end) {
+        if (is_int($end) || is_string($end) && ctype_digit($end)) {
+            $period->setRecurrences($end);
+        } elseif ($end) {
             $period->setEndDate($end);
         }
 

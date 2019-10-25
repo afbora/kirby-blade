@@ -9,6 +9,8 @@ use Afbora\Blade\Blade;
 use Kirby\Toolkit\F;
 use Kirby\Toolkit\Tpl;
 use Kirby\Toolkit\Dir;
+use Pine\BladeFilters\BladeFilters;
+use voku\helper\HtmlMin;
 
 class Template extends KirbyTemplate
 {
@@ -71,28 +73,23 @@ class Template extends KirbyTemplate
             );
             $this->setDirectives();
             $this->setIfStatements();
+            $this->setFilters();
 
             $html = $this->blade->make($this->name, $data);
         } else {
             $html = Tpl::load($this->file(), $data);
         }
 
-        if (option('afbora.blade.minify', false) === true) {
-            $search = array(
-                '/\>[^\S ]+/s',     // strip whitespaces after tags, except space
-                '/[^\S ]+\</s',     // strip whitespaces before tags, except space
-                '/(\s)+/s',         // shorten multiple whitespace sequences
-                '/<!--(.|\s)*?-->/' // Remove HTML comments
-            );
+        if (option('afbora.blade.minify.enabled', false) === true) {
+            $htmlMin = new HtmlMin();
+            $options = option('afbora.blade.minify.options', []);
 
-            $replace = array(
-                '>',
-                '<',
-                '\\1',
-                ''
-            );
-
-            $html = preg_replace($search, $replace, $html);
+            foreach ($options as $option => $status) {
+                if (method_exists($htmlMin, $option)) {
+                    $htmlMin->{$option}((bool)$status);
+                }
+            }
+            return $htmlMin->minify($html);
         }
 
         return $html;
@@ -102,6 +99,13 @@ class Template extends KirbyTemplate
     {
         if (!file_exists($this->views)) {
             Dir::make($this->views);
+        }
+    }
+
+    protected function setFilters()
+    {
+        foreach ($filters = option('afbora.blade.filters', []) as $filter => $callback) {
+            BladeFilters::macro($filter, $callback);
         }
     }
 
