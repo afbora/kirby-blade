@@ -3,7 +3,6 @@
 namespace Afbora\Blade;
 
 use Afbora\View\ViewServiceProvider;
-use Pine\BladeFilters\BladeFiltersServiceProvider;
 use Illuminate\Container\Container;
 use Illuminate\Contracts\Container\Container as ContainerInterface;
 use Illuminate\Contracts\View\Factory as FactoryContract;

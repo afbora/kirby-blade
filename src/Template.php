@@ -2,10 +2,10 @@
 
 namespace Afbora;
 
+use Afbora\Blade\Blade;
 use Exception;
 use Kirby\Cms\App as Kirby;
 use Kirby\Cms\Template as KirbyTemplate;
-use Afbora\Blade\Blade;
 use Kirby\Toolkit\F;
 use Kirby\Toolkit\Tpl;
 use Kirby\Toolkit\Dir;
@@ -14,13 +14,13 @@ use voku\helper\HtmlMin;
 
 class Template extends KirbyTemplate
 {
+    public static $data = [];
     protected $blade;
     protected $views;
     protected $defaultType;
     protected $name;
     protected $templates;
     protected $type;
-    public static $data = [];
 
     public function __construct(Kirby $kirby, string $name, string $type = 'html', string $defaultType = 'html')
     {
@@ -34,33 +34,42 @@ class Template extends KirbyTemplate
         $this->setViewDirectory();
     }
 
-    public function file(): ?string
+    protected function getPathTemplates()
     {
-        if ($this->hasDefaultType() === true) {
-            try {
-                // Try the default template in the default template directory.
-                return F::realpath($this->getFilename(), $this->getPathTemplates());
-            } catch (Exception $e) {
-                //
-            }
-
-            // Look for the default template provided by an extension.
-            $path = Kirby::instance()->extension($this->store(), $this->name());
-
-            if ($path !== null) {
-                return $path;
-            }
+        if (!is_null($this->templates)) {
+            return $this->templates;
         }
 
-        $name = $this->name() . "." . $this->type();
+        $optionPath = option('afbora.blade.templates');
 
-        try {
-            // Try the template with type extension in the default template directory.
-            return F::realpath($this->getFilename($name), $this->getPathTemplates());
-        } catch (Exception $e) {
-            // Look for the template with type extension provided by an extension.
-            // This might be null if the template does not exist.
-            return Kirby::instance()->extension($this->store(), $name);
+        if ($optionPath !== null && is_dir($optionPath)) {
+            if (is_callable($optionPath)) {
+                return $optionPath();
+            }
+
+            $path = kirby()->roots()->index() . "/" . $optionPath;
+        } else {
+            $path = $this->root();
+        }
+
+        return $path;
+    }
+
+    protected function getPathViews()
+    {
+        $path = option('afbora.blade.views');
+
+        if (is_callable($path)) {
+            return $path();
+        }
+
+        return $path;
+    }
+
+    public function setViewDirectory()
+    {
+        if (!file_exists($this->views)) {
+            Dir::make($this->views);
         }
     }
 
@@ -71,11 +80,12 @@ class Template extends KirbyTemplate
                 $this->templates,
                 $this->views
             );
+
             $this->setDirectives();
             $this->setIfStatements();
             $this->setFilters();
 
-            $html = $this->blade->make($this->name, $data);
+            $html = $this->blade->make($this->name, $data)->render();
         } else {
             $html = Tpl::load($this->file(), $data);
         }
@@ -95,18 +105,14 @@ class Template extends KirbyTemplate
         return $html;
     }
 
-    public function setViewDirectory()
+    public function isBlade()
     {
-        if (!file_exists($this->views)) {
-            Dir::make($this->views);
-        }
+        return !file_exists($this->getPathTemplates() . "/" . $this->name() . "." . $this->bladeExtension());
     }
 
-    protected function setFilters()
+    public function bladeExtension(): string
     {
-        foreach ($filters = option('afbora.blade.filters', []) as $filter => $callback) {
-            BladeFilters::macro($filter, $callback);
-        }
+        return 'blade.php';
     }
 
     protected function setDirectives()
@@ -340,6 +346,43 @@ class Template extends KirbyTemplate
         }
     }
 
+    protected function setFilters()
+    {
+        foreach ($filters = option('afbora.blade.filters', []) as $filter => $callback) {
+            BladeFilters::macro($filter, $callback);
+        }
+    }
+
+    public function file(): ?string
+    {
+        if ($this->hasDefaultType() === true) {
+            try {
+                // Try the default template in the default template directory.
+                return F::realpath($this->getFilename(), $this->getPathTemplates());
+            } catch (Exception $e) {
+                //
+            }
+
+            // Look for the default template provided by an extension.
+            $path = Kirby::instance()->extension($this->store(), $this->name());
+
+            if ($path !== null) {
+                return $path;
+            }
+        }
+
+        $name = $this->name() . "." . $this->type();
+
+        try {
+            // Try the template with type extension in the default template directory.
+            return F::realpath($this->getFilename($name), $this->getPathTemplates());
+        } catch (Exception $e) {
+            // Look for the template with type extension provided by an extension.
+            // This might be null if the template does not exist.
+            return Kirby::instance()->extension($this->store(), $name);
+        }
+    }
+
     public function getFilename(string $name = null): string
     {
         if ($name) {
@@ -351,47 +394,5 @@ class Template extends KirbyTemplate
         }
 
         return $this->getPathTemplates() . "/" . $this->name() . "." . $this->extension();
-    }
-
-    public function isBlade()
-    {
-        return !!file_exists($this->getPathTemplates() . "/" . $this->name() . "." . $this->bladeExtension());
-    }
-
-    public function bladeExtension(): string
-    {
-        return 'blade.php';
-    }
-
-    protected function getPathViews()
-    {
-        $path = option('afbora.blade.views');
-
-        if (is_callable($path)) {
-            return $path();
-        }
-
-        return $path;
-    }
-
-    protected function getPathTemplates()
-    {
-        if (!is_null($this->templates)) {
-            return $this->templates;
-        }
-
-        $optionPath = option('afbora.blade.templates');
-
-        if ($optionPath !== null && is_dir($optionPath)) {
-            if (is_callable($optionPath)) {
-                return $optionPath();
-            }
-
-            $path = kirby()->roots()->index() . "/" . $optionPath;
-        } else {
-            $path = $this->root();
-        }
-
-        return $path;
     }
 }

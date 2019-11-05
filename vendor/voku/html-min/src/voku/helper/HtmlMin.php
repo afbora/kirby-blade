@@ -23,7 +23,7 @@ class HtmlMin implements HtmlMinInterface
     /**
      * @var string
      */
-    private static $regExSpace = "/[[:space:]]{2,}|[\r\n]+/u";
+    private static $regExSpace = "/[[:space:]]{2,}|[\r\n]/u";
 
     /**
      * @var array
@@ -518,7 +518,7 @@ class HtmlMin implements HtmlMinInterface
                                &&
                                \strpos($attribute->name, ' ') === false
                                &&
-                               \preg_match('/["\'=<>` \t\r\n\f]+/', $attribute->value) === 0;
+                               \preg_match('/["\'=<>` \t\r\n\f]/', $attribute->value) === 0;
 
                 $quoteTmp = '"';
                 if (
@@ -1071,12 +1071,6 @@ class HtmlMin implements HtmlMinInterface
             return '';
         }
 
-        // init
-        static $CACHE_SELF_CLOSING_TAGS = null;
-        if ($CACHE_SELF_CLOSING_TAGS === null) {
-            $CACHE_SELF_CLOSING_TAGS = \implode('|', self::$selfClosingTags);
-        }
-
         // reset
         $this->protectedChildNodes = [];
 
@@ -1097,28 +1091,35 @@ class HtmlMin implements HtmlMinInterface
         // -------------------------------------------------------------------------
 
         // Remove extra white-space(s) between HTML attribute(s)
-        $html = (string) \preg_replace_callback(
-            '#<([^/\s<>!]+)(?:\s+([^<>]*?)\s*|\s*)(/?)>#u',
-            static function ($matches) {
-                return '<' . $matches[1] . \preg_replace('#([^\s=]+)(\=([\'"]?)(.*?)\3)?(\s+|$)#su', ' $1$2', $matches[2]) . $matches[3] . '>';
-            },
-            $html
-        );
+        if (strpos($html, ' ') !== false) {
+            $html = (string) \preg_replace_callback(
+                '#<([^/\s<>!]+)(?:\s+([^<>]*?)\s*|\s*)(/?)>#',
+                static function ($matches) {
+                    return '<' . $matches[1] . \preg_replace('#([^\s=]+)(=([\'"]?)(.*?)\3)?(\s+|$)#su', ' $1$2', $matches[2]) . $matches[3] . '>';
+                },
+                $html
+            );
+        }
 
         if ($this->doRemoveSpacesBetweenTags) {
-            // Remove spaces that are between > and <
-            $html = (string) \preg_replace('/(>) (<)/', '>$2', $html);
+            /** @noinspection NestedPositiveIfStatementsInspection */
+            if (strpos($html, ' ') !== false) {
+                // Remove spaces that are between > and <
+                $html = (string) \preg_replace('#(>)\s(<)#', '>$2', $html);
+            }
         }
 
         // -------------------------------------------------------------------------
         // Restore protected HTML-code.
         // -------------------------------------------------------------------------
 
-        $html = (string) \preg_replace_callback(
-            '/<(?<element>' . $this->protectedChildNodesHelper . ')(?<attributes> [^>]*)?>(?<value>.*?)<\/' . $this->protectedChildNodesHelper . '>/',
-            [$this, 'restoreProtectedHtml'],
-            $html
-        );
+        if (strpos($html, $this->protectedChildNodesHelper) !== false) {
+            $html = (string) \preg_replace_callback(
+                '/<(?<element>' . $this->protectedChildNodesHelper . ')(?<attributes> [^>]*)?>(?<value>.*?)<\/' . $this->protectedChildNodesHelper . '>/',
+                [$this, 'restoreProtectedHtml'],
+                $html
+            );
+        }
 
         // -------------------------------------------------------------------------
         // Restore protected HTML-entities.
@@ -1164,14 +1165,14 @@ class HtmlMin implements HtmlMinInterface
             $replacement[] = '<' . $selfClosingTag . '>';
             $replace[] = '<' . $selfClosingTag . ' />';
             $replacement[] = '<' . $selfClosingTag . '>';
+            $replace[] = '></' . $selfClosingTag . '>';
+            $replacement[] = '>';
         }
         $html = \str_replace(
             $replace,
             $replacement,
             $html
         );
-
-        $html = (string) \preg_replace('#<\b(' . $CACHE_SELF_CLOSING_TAGS . ')([^>]*+)><\/\b\1>#', '<\\1\\2>', $html);
 
         // ------------------------------------
         // check if compression worked
@@ -1213,12 +1214,18 @@ class HtmlMin implements HtmlMinInterface
      */
     private function isConditionalComment($comment): bool
     {
-        if (\preg_match('/^\[if [^\]]+\]/', $comment)) {
-            return true;
+        if (strpos($comment, '[if ') !== false) {
+            /** @noinspection RegExpRedundantEscape */
+            if (\preg_match('/^\[if [^\]]+\]/', $comment)) {
+                return true;
+            }
         }
 
-        if (\preg_match('/\[endif\]$/', $comment)) {
-            return true;
+        if (strpos($comment, '[endif]') !== false) {
+            /** @noinspection RegExpRedundantEscape */
+            if (\preg_match('/\[endif\]$/', $comment)) {
+                return true;
+            }
         }
 
         return false;
@@ -1482,12 +1489,7 @@ class HtmlMin implements HtmlMinInterface
     {
         \preg_match('/.*"(?<id>\d*)"/', $matches['attributes'], $matchesInner);
 
-        $html = '';
-        if (isset($this->protectedChildNodes[$matchesInner['id']])) {
-            $html .= $this->protectedChildNodes[$matchesInner['id']];
-        }
-
-        return $html;
+        return $this->protectedChildNodes[$matchesInner['id']] ?? '';
     }
 
     /**
