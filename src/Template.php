@@ -107,7 +107,7 @@ class Template extends KirbyTemplate
 
     public function isBlade()
     {
-        return !file_exists($this->getPathTemplates() . "/" . $this->name() . "." . $this->bladeExtension());
+        return file_exists($this->getPathTemplates() . "/" . $this->name() . "." . $this->bladeExtension());
     }
 
     public function bladeExtension(): string
