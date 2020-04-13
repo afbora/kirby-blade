@@ -5,7 +5,6 @@ namespace Afbora\View;
 use Afbora\View\Compiler\BladeCompiler;
 use Illuminate\View\Engines\CompilerEngine;
 use Illuminate\View\ViewServiceProvider as ViewProvider;
-use Pine\BladeFilters\BladeFiltersServiceProvider;
 
 class ViewServiceProvider extends ViewProvider
 {
@@ -26,9 +25,6 @@ class ViewServiceProvider extends ViewProvider
                 $this->app['config']['view.compiled']
             );
         });
-
-        // Add blade filters service provider
-        (new BladeFiltersServiceProvider($this->app))->boot();
 
         $resolver->register('blade', function () {
             return new CompilerEngine($this->app['blade.compiler']);

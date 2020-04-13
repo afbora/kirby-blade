@@ -3,9 +3,9 @@
 namespace Illuminate\Support\Testing\Fakes;
 
 use Closure;
+use Illuminate\Contracts\Events\Dispatcher;
 use Illuminate\Support\Arr;
 use PHPUnit\Framework\Assert as PHPUnit;
-use Illuminate\Contracts\Events\Dispatcher;
 
 class EventFake implements Dispatcher
 {
@@ -72,8 +72,10 @@ class EventFake implements Dispatcher
      */
     public function assertDispatchedTimes($event, $times = 1)
     {
-        PHPUnit::assertTrue(
-            ($count = $this->dispatched($event)->count()) === $times,
+        $count = $this->dispatched($event)->count();
+
+        PHPUnit::assertSame(
+            $times, $count,
             "The expected [{$event}] event was dispatched {$count} times instead of {$times} times."
         );
     }
@@ -87,8 +89,8 @@ class EventFake implements Dispatcher
      */
     public function assertNotDispatched($event, $callback = null)
     {
-        PHPUnit::assertTrue(
-            $this->dispatched($event, $callback)->count() === 0,
+        PHPUnit::assertCount(
+            0, $this->dispatched($event, $callback),
             "The unexpected [{$event}] event was dispatched."
         );
     }
@@ -248,8 +250,8 @@ class EventFake implements Dispatcher
     /**
      * Dispatch an event and call the listeners.
      *
-     * @param  string|object $event
-     * @param  mixed $payload
+     * @param  string|object  $event
+     * @param  mixed  $payload
      * @return void
      */
     public function until($event, $payload = [])

@@ -9,7 +9,6 @@ use Kirby\Cms\Template as KirbyTemplate;
 use Kirby\Toolkit\F;
 use Kirby\Toolkit\Tpl;
 use Kirby\Toolkit\Dir;
-use Pine\BladeFilters\BladeFilters;
 use voku\helper\HtmlMin;
 
 class Template extends KirbyTemplate
@@ -83,7 +82,6 @@ class Template extends KirbyTemplate
 
             $this->setDirectives();
             $this->setIfStatements();
-            $this->setFilters();
 
             $html = $this->blade->make($this->name, $data)->render();
         } else {
@@ -343,13 +341,6 @@ class Template extends KirbyTemplate
     {
         foreach ($statements = option('afbora.blade.ifs', []) as $statement => $callback) {
             $this->blade->compiler()->if($statement, $callback);
-        }
-    }
-
-    protected function setFilters()
-    {
-        foreach ($filters = option('afbora.blade.filters', []) as $filter => $callback) {
-            BladeFilters::macro($filter, $callback);
         }
     }
 

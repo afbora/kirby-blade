@@ -31,9 +31,7 @@ class ConfigurationUrlParser
             $config = ['url' => $config];
         }
 
-        $url = $config['url'] ?? null;
-
-        $config = Arr::except($config, 'url');
+        $url = Arr::pull($config, 'url');
 
         if (! $url) {
             return $config;
@@ -95,7 +93,7 @@ class ConfigurationUrlParser
     {
         $path = $url['path'] ?? null;
 
-        return $path ? substr($path, 1) : null;
+        return $path && $path !== '/' ? substr($path, 1) : null;
     }
 
     /**
@@ -124,6 +122,8 @@ class ConfigurationUrlParser
      *
      * @param  string  $url
      * @return array
+     *
+     * @throws \InvalidArgumentException
      */
     protected function parseUrl($url)
     {

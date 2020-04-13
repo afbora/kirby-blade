@@ -26,7 +26,7 @@ interface ResponseFactory
     /**
      * Create a new response for a given view.
      *
-     * @param  string  $view
+     * @param  string|array  $view
      * @param  array  $data
      * @param  int  $status
      * @param  array  $headers
@@ -113,7 +113,7 @@ interface ResponseFactory
      * Create a new redirect response to a named route.
      *
      * @param  string  $route
-     * @param  array  $parameters
+     * @param  mixed  $parameters
      * @param  int  $status
      * @param  array  $headers
      * @return \Illuminate\Http\RedirectResponse
@@ -124,7 +124,7 @@ interface ResponseFactory
      * Create a new redirect response to a controller action.
      *
      * @param  string  $action
-     * @param  array  $parameters
+     * @param  mixed  $parameters
      * @param  int  $status
      * @param  array  $headers
      * @return \Illuminate\Http\RedirectResponse

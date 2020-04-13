@@ -12,7 +12,6 @@ Kirby::plugin('afbora/blade', [
         },
         'directives' => [],
         'ifs' => [],
-        'filters' => [],
         'minify' => [
             'enabled' => false,
             'options' => [],

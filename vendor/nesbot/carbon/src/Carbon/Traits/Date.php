@@ -68,6 +68,8 @@ use RuntimeException;
  * @property-read int             $daysInMonth                                                                        number of days in the given month
  * @property-read string          $latinMeridiem                                                                      "am"/"pm" (Ante meridiem or Post meridiem latin lowercase mark)
  * @property-read string          $latinUpperMeridiem                                                                 "AM"/"PM" (Ante meridiem or Post meridiem latin uppercase mark)
+ * @property-read string          $timezoneAbbreviatedName                                                            the current timezone abbreviated name
+ * @property-read string          $tzAbbrName                                                                         alias of $timezoneAbbreviatedName
  * @property-read string          $dayName                                                                            long name of weekday translated according to Carbon locale, in english if no translation available for current language
  * @property-read string          $shortDayName                                                                       short name of weekday translated according to Carbon locale, in english if no translation available for current language
  * @property-read string          $minDayName                                                                         very short name of weekday translated according to Carbon locale, in english if no translation available for current language
@@ -92,8 +94,6 @@ use RuntimeException;
  * @property-read bool            $utc                                                                                checks if the timezone is UTC, true if UTC, false otherwise
  * @property-read string          $timezoneName                                                                       the current timezone name
  * @property-read string          $tzName                                                                             alias of $timezoneName
- * @property-read string          $timezoneAbbreviatedName                                                            the current timezone abbreviated name
- * @property-read string          $tzAbbrName                                                                         alias of $timezoneAbbreviatedName
  * @property-read string          $locale                                                                             locale of the current instance
  *
  * @method        bool            isUtc()                                                                             Check if the current instance has UTC timezone. (Both isUtc and isUTC cases are valid.)
@@ -525,6 +525,7 @@ trait Date
     use Macro;
     use Modifiers;
     use Mutability;
+    use ObjectInitialisation;
     use Options;
     use Rounding;
     use Serialization;
@@ -540,19 +541,19 @@ trait Date
      */
     protected static $days = [
         // @call isDayOfWeek
-        self::SUNDAY => 'Sunday',
+        CarbonInterface::SUNDAY => 'Sunday',
         // @call isDayOfWeek
-        self::MONDAY => 'Monday',
+        CarbonInterface::MONDAY => 'Monday',
         // @call isDayOfWeek
-        self::TUESDAY => 'Tuesday',
+        CarbonInterface::TUESDAY => 'Tuesday',
         // @call isDayOfWeek
-        self::WEDNESDAY => 'Wednesday',
+        CarbonInterface::WEDNESDAY => 'Wednesday',
         // @call isDayOfWeek
-        self::THURSDAY => 'Thursday',
+        CarbonInterface::THURSDAY => 'Thursday',
         // @call isDayOfWeek
-        self::FRIDAY => 'Friday',
+        CarbonInterface::FRIDAY => 'Friday',
         // @call isDayOfWeek
-        self::SATURDAY => 'Saturday',
+        CarbonInterface::SATURDAY => 'Saturday',
     ];
 
     /**
@@ -613,29 +614,6 @@ trait Date
     protected static function safeCreateDateTimeZone($object, $objectDump = null)
     {
         return CarbonTimeZone::instance($object, $objectDump);
-    }
-
-    /**
-     * Creates a DateTimeZone from a string, DateTimeZone or integer offset then convert it as region timezone
-     * if integer.
-     *
-     * @param DateTimeZone|string|int|null $object
-     * @param DateTimeZone|string|int|null $originalObject if different
-     *
-     * @throws \InvalidArgumentException
-     *
-     * @return CarbonTimeZone|false
-     */
-    protected function autoDetectTimeZone($object, $originalObject = null)
-    {
-        /** @var CarbonTimeZone $timezone */
-        $timezone = CarbonTimeZone::instance($object);
-
-        if ($timezone && is_int($originalObject ?: $object)) {
-            $timezone = $timezone->toRegionTimeZone($this);
-        }
-
-        return $timezone;
     }
 
     /**
@@ -851,6 +829,10 @@ trait Date
             'localeMonth' => '%B',
             // @property string the abbreviated month in current locale LC_TIME
             'shortLocaleMonth' => '%b',
+            // @property-read string $timezoneAbbreviatedName the current timezone abbreviated name
+            'timezoneAbbreviatedName' => 'T',
+            // @property-read string $tzAbbrName alias of $timezoneAbbreviatedName
+            'tzAbbrName' => 'T',
         ];
 
         switch (true) {
@@ -1013,18 +995,15 @@ trait Date
             case $name === 'timezoneName' || $name === 'tzName':
                 return $this->getTimezone()->getName();
 
-            // @property-read string $timezoneAbbreviatedName the current timezone abbreviated name
-            // @property-read string $tzAbbrName alias of $timezoneAbbreviatedName
-            case $name === 'timezoneAbbreviatedName' || $name === 'tzAbbrName':
-                return CarbonTimeZone::instance($this->getTimezone())->getAbbr($this->dst);
-
             // @property-read string locale of the current instance
             case $name === 'locale':
-                return $this->getLocalTranslator()->getLocale();
+                return $this->getTranslatorLocale();
 
             default:
-                if (static::hasMacro($macro = 'get'.ucfirst($name))) {
-                    return $this->$macro();
+                $macro = $this->getLocalMacro('get'.ucfirst($name));
+
+                if ($macro) {
+                    return $this->executeCallableWithContext($macro);
                 }
 
                 throw new InvalidArgumentException(sprintf("Unknown getter '%s'", $name));
@@ -1061,7 +1040,13 @@ trait Date
      */
     public function __set($name, $value)
     {
-        $this->set($name, $value);
+        if ($this->constructedObjectId === spl_object_hash($this)) {
+            $this->set($name, $value);
+
+            return;
+        }
+
+        $this->$name = $value;
     }
 
     /**
@@ -1180,8 +1165,10 @@ trait Date
                 break;
 
             default:
-                if (static::hasMacro($macro = 'set'.ucfirst($name))) {
-                    $this->$macro($value);
+                $macro = $this->getLocalMacro('set'.ucfirst($name));
+
+                if ($macro) {
+                    $this->executeCallableWithContext($macro, $value);
 
                     break;
                 }
@@ -1529,13 +1516,7 @@ trait Date
      */
     public function setTimezone($value)
     {
-        /** @var static $date */
-        $date = parent::setTimezone(static::safeCreateDateTimeZone($value));
-        // https://bugs.php.net/bug.php?id=72338
-        // just workaround on this bug
-        $date->getTimestamp();
-
-        return $date;
+        return parent::setTimezone(static::safeCreateDateTimeZone($value));
     }
 
     /**
@@ -1930,7 +1911,7 @@ trait Date
                 'YYYYYY' => function (CarbonInterface $date) {
                     return ($date->year < 0 ? '' : '+').$date->getPaddedUnit('year', 6);
                 },
-                'z' => 'tzAbbrName',
+                'z' => ['rawFormat', ['T']],
                 'zz' => 'tzName',
                 'Z' => ['getOffsetString', []],
                 'ZZ' => ['getOffsetString', ['']],
@@ -2417,6 +2398,13 @@ trait Date
         return call_user_func_array($macro, $parameters);
     }
 
+    protected function executeCallableWithContext($macro, ...$parameters)
+    {
+        return static::bindMacroContext($this, function () use (&$macro, &$parameters) {
+            return $this->executeCallable($macro, ...$parameters);
+        });
+    }
+
     protected static function getGenericMacros()
     {
         foreach (static::$globalGenericMacros as $list) {
@@ -2568,7 +2556,7 @@ trait Date
             try {
                 return $this->isCurrentUnit(strtolower(substr($unit, 9)));
             } catch (BadUnitException | BadMethodCallException $exception) {
-                // Try macros
+                // Try next
             }
         }
 
@@ -2578,12 +2566,14 @@ trait Date
 
                 return $this->range($parameters[0] ?? $this, $parameters[1] ?? 1, $unit);
             } catch (InvalidArgumentException $exception) {
-                // Try next
+                // Try macros
             }
         }
 
         return static::bindMacroContext($this, function () use (&$method, &$parameters) {
-            if (!static::hasMacro($method)) {
+            $macro = $this->getLocalMacro($method);
+
+            if (!$macro) {
                 foreach ([$this->localGenericMacros ?: [], static::getGenericMacros()] as $list) {
                     foreach ($list as $callback) {
                         try {
@@ -2601,7 +2591,7 @@ trait Date
                 return null;
             }
 
-            return $this->executeCallable(($this->localMacros ?? [])[$method] ?? static::$globalMacros[$method], ...$parameters);
+            return $this->executeCallable($macro, ...$parameters);
         });
     }
 }

@@ -7,9 +7,9 @@
 [![Release](https://img.shields.io/github/v/release/afbora/kirby-blade?style=flat-square)](https://github.com/afbora/kirby-blade)
 [![License](https://img.shields.io/github/license/afbora/kirby-blade?style=flat-square)](https://github.com/afbora/kirby-blade)
 
-Kirby Blade use Laravel `illuminate/view` 5.8+ package and compatible with Kirby 3.
+Kirby Blade use Laravel `illuminate/view` 7.x package and compatible with Kirby 3.
 
-This package enable [Laravel Blade](https://laravel.com/docs/5.8/blade) for your own Kirby applications.
+This package enable [Laravel Blade](https://laravel.com/docs/7.x/blade) for your own Kirby applications.
 
 ## Installation
 
@@ -33,9 +33,9 @@ According to Laravel Blade documentation is:
 
 ## Usage
 
-You can use the power of Blade like [Layouts](https://laravel.com/docs/5.8/blade#template-inheritance), [Control Structures](https://laravel.com/docs/5.8/blade#control-structures), [Sub-Views](https://laravel.com/docs/5.8/blade#including-sub-views), Directives and your Custom If Statements.
+You can use the power of Blade like [Layouts](https://laravel.com/docs/7.x/blade#template-inheritance), [Control Structures](https://laravel.com/docs/7.x/blade#control-structures), [Forms](https://laravel.com/docs/7.x/blade#forms), [Sub-Views](https://laravel.com/docs/7.x/blade#including-subviews), [Components](https://laravel.com/docs/7.x/blade#components), [Directives](https://laravel.com/docs/7.x/blade#extending-blade) and your custom if statements.
 
-All the documentation about Laravel Blade is in the [official documentation](https://laravel.com/docs/5.8/blade).
+All the documentation about Laravel Blade is in the [official documentation](https://laravel.com/docs/7.x/blade).
 
 ## Options
 
@@ -169,31 +169,7 @@ After declaration you can use it like:
 
 ### Filters
 
-**Usage**
-
-Following line output: `KIRBY`
-
-````
-{{ "Kirby" | upper }}
-````
-
-With custom filters: `quote`
-
-````
-{{ $page->title() | quote }}
-````
-
-You can add your own custom filters as follows from `config.php`:
-
-```php
-'afbora.blade.filters' => [
-    'quote' => function ($value) {
-        return '"' . $value . '"';
-    },
-]
-```
-
-You can get list of filters here: [thepinecode/blade-filter](https://github.com/thepinecode/blade-filters#the-available-filters) 
+**Breaking Change: After the 1.6 version, the filters feature has been removed. Use 1.5.x to use filters.**
 
 ### Minify
 

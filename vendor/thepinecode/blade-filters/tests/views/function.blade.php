@@ -1,1 +1,0 @@
-{{ strtolower('function test') | slug }}
