@@ -428,7 +428,7 @@ class Collection implements ArrayAccess, Enumerable
      */
     public function groupBy($groupBy, $preserveKeys = false)
     {
-        if (is_array($groupBy)) {
+        if (! $this->useAsCallable($groupBy) && is_array($groupBy)) {
             $nextGroups = $groupBy;
 
             $groupBy = array_shift($nextGroups);
@@ -979,6 +979,28 @@ class Collection implements ArrayAccess, Enumerable
     }
 
     /**
+     * Skip items in the collection until the given condition is met.
+     *
+     * @param  mixed  $value
+     * @return static
+     */
+    public function skipUntil($value)
+    {
+        return new static($this->lazy()->skipUntil($value)->all());
+    }
+
+    /**
+     * Skip items in the collection while the given condition is met.
+     *
+     * @param  mixed  $value
+     * @return static
+     */
+    public function skipWhile($value)
+    {
+        return new static($this->lazy()->skipWhile($value)->all());
+    }
+
+    /**
      * Slice the underlying collection array.
      *
      * @param  int  $offset
@@ -1051,7 +1073,7 @@ class Collection implements ArrayAccess, Enumerable
     /**
      * Sort through each item with a callback.
      *
-     * @param  callable|null  $callback
+     * @param  callable|int|null  $callback
      * @return static
      */
     public function sort($callback = null)
@@ -1183,6 +1205,28 @@ class Collection implements ArrayAccess, Enumerable
         }
 
         return $this->slice(0, $limit);
+    }
+
+    /**
+     * Take items in the collection until the given condition is met.
+     *
+     * @param  mixed  $key
+     * @return static
+     */
+    public function takeUntil($value)
+    {
+        return new static($this->lazy()->takeUntil($value)->all());
+    }
+
+    /**
+     * Take items in the collection while the given condition is met.
+     *
+     * @param  mixed  $key
+     * @return static
+     */
+    public function takeWhile($value)
+    {
+        return new static($this->lazy()->takeWhile($value)->all());
     }
 
     /**
