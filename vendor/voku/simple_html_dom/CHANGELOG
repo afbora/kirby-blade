@@ -13,6 +13,13 @@
 14: fix -> keep html comments, also at the beginning of the html input
 15: add "HtmlDomParser->overwriteTemplateLogicSyntaxInSpecialScriptTags()"
 16: add support for "text/x-handlebars-template"
+17: fix -> problem with auto-completion in e.g. PhpStorm
+18: small optimizations + fix phpstan reported errors
+19: add support for different special script-tags
+20: fix -> invalid html (move html that is after "</html>" before "</html>")
+21: fix -> internal invalid self-closing tags (e.g. <wbr>)
+22: fix -> invalid html (remove content before "<!doctype.*>")
+23: fix -> invalid html (remove content before "<!doctype.*>") + try to repair broken html
 
 
 [PHP Simple HTML Dom v4.6.x]

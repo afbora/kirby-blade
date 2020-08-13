@@ -60,9 +60,13 @@ class SimpleXmlDom extends AbstractSimpleXmlDom implements \IteratorAggregate, S
      */
     public function getAllAttributes()
     {
-        if ($this->node->hasAttributes()) {
+        if (
+            $this->node
+            &&
+            $this->node->hasAttributes()
+        ) {
             $attributes = [];
-            foreach ($this->node->attributes as $attr) {
+            foreach ($this->node->attributes ?? [] as $attr) {
                 $attributes[$attr->name] = XmlDomParser::putReplacedBackToPreserveHtmlEntities($attr->value);
             }
 
@@ -181,9 +185,9 @@ class SimpleXmlDom extends AbstractSimpleXmlDom implements \IteratorAggregate, S
         if (!empty($newDocument)) {
             $ownerDocument = $this->node->ownerDocument;
             if (
-                $ownerDocument !== null
+                $ownerDocument
                 &&
-                $newDocument->getDocument()->documentElement !== null
+                $newDocument->getDocument()->documentElement
             ) {
                 $newNode = $ownerDocument->importNode($newDocument->getDocument()->documentElement, true);
                 /** @noinspection UnusedFunctionResultInspection */
@@ -254,7 +258,7 @@ class SimpleXmlDom extends AbstractSimpleXmlDom implements \IteratorAggregate, S
         }
 
         $ownerDocument = $this->node->ownerDocument;
-        if ($ownerDocument !== null) {
+        if ($ownerDocument) {
             $newElement = $ownerDocument->createTextNode($string);
             $newNode = $ownerDocument->importNode($newElement, true);
             $this->node->parentNode->replaceChild($newNode, $this->node);
@@ -328,25 +332,26 @@ class SimpleXmlDom extends AbstractSimpleXmlDom implements \IteratorAggregate, S
     protected function changeElementName(\DOMNode $node, string $name)
     {
         $ownerDocument = $node->ownerDocument;
-        if ($ownerDocument) {
-            $newNode = $ownerDocument->createElement($name);
-        } else {
+        if (!$ownerDocument) {
             return false;
         }
 
+        $newNode = $ownerDocument->createElement($name);
+
         foreach ($node->childNodes as $child) {
             $child = $ownerDocument->importNode($child, true);
-            /** @noinspection UnusedFunctionResultInspection */
             $newNode->appendChild($child);
         }
 
-        foreach ($node->attributes as $attrName => $attrNode) {
+        foreach ($node->attributes ?? [] as $attrName => $attrNode) {
             /** @noinspection UnusedFunctionResultInspection */
             $newNode->setAttribute($attrName, $attrNode);
         }
 
-        /** @noinspection UnusedFunctionResultInspection */
-        $newNode->ownerDocument->replaceChild($newNode, $node);
+        if ($newNode->ownerDocument) {
+            /** @noinspection UnusedFunctionResultInspection */
+            $newNode->ownerDocument->replaceChild($newNode, $node);
+        }
 
         return $newNode;
     }

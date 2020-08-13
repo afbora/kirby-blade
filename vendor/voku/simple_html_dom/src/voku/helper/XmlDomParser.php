@@ -42,7 +42,6 @@ class XmlDomParser extends AbstractDomParser
         }
 
         if ($element !== null) {
-            /** @noinspection UnusedFunctionResultInspection */
             $this->loadXml($element);
         }
     }
@@ -138,7 +137,11 @@ class XmlDomParser extends AbstractDomParser
         $sxe = \simplexml_load_string($xml, \SimpleXMLElement::class, $optionsXml);
         if ($sxe !== false && \count(\libxml_get_errors()) === 0) {
             $domElementTmp = \dom_import_simplexml($sxe);
-            if ($domElementTmp) {
+            if (
+                $domElementTmp
+                &&
+                $domElementTmp->ownerDocument
+            ) {
                 $documentFound = true;
                 $this->document = $domElementTmp->ownerDocument;
             }
