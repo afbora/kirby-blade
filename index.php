@@ -21,5 +21,14 @@ Kirby::plugin('afbora/blade', [
         'template' => function (Kirby $kirby, string $name, string $contentType = null) {
             return new Template($kirby, $name, $contentType);
         }
+    ],
+    'routes' => [
+        [
+            // Block all requests to /url.blade and return 404
+            'pattern' => '(:all)\.blade',
+            'action' => function ($all) {
+                return false;
+            }
+        ]
     ]
 ]);
