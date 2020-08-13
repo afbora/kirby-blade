@@ -363,8 +363,11 @@ class Template extends KirbyTemplate
         }
 
         // disallow blade extension for content representation, for ex: /blog.blade
-        $type = $this->type() === 'blade' ? 'php' : $this->type();
-        $name = $this->name() . "." . $type;
+        if ($this->type() === 'blade') {
+            return null;
+        } else {
+            $name = $this->name() . "." . $this->type();
+        }
 
         try {
             // Try the template with type extension in the default template directory.
