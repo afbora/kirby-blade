@@ -13,7 +13,7 @@
         "template",
         "template-engine"
     ],
-    "version": "1.8.0",
+    "version": "1.9.0",
     "type": "kirby-plugin",
     "license": "MIT",
     "authors": [
@@ -23,9 +23,9 @@
         }
     ],
     "require": {
-        "php": "^7.2",
-        "getkirby/composer-installer": "^1.1",
-        "illuminate/view": "^7.0",
+        "php": "^7.3",
+        "getkirby/composer-installer": "^1.2",
+        "illuminate/view": "^8.0",
         "voku/html-min": "^4.4"
     },
     "config": {

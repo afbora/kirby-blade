@@ -41,7 +41,7 @@ class SimpleXmlDom extends AbstractSimpleXmlDom implements \IteratorAggregate, S
     }
 
     /**
-     * Find list of nodes with a CSS selector.
+     * Find list of nodes with a CSS or xPath selector.
      *
      * @param string   $selector
      * @param int|null $idx
@@ -162,7 +162,7 @@ class SimpleXmlDom extends AbstractSimpleXmlDom implements \IteratorAggregate, S
             $tmpStr = $this->normalizeStringForComparision($string);
             if ($tmpDomString !== $tmpStr) {
                 throw new \RuntimeException(
-                    'Not valid HTML fragment!' . "\n" .
+                    'Not valid XML fragment!' . "\n" .
                     $tmpDomString . "\n" .
                     $tmpStr
                 );
@@ -208,7 +208,9 @@ class SimpleXmlDom extends AbstractSimpleXmlDom implements \IteratorAggregate, S
     protected function replaceNodeWithString(string $string): SimpleXmlDomInterface
     {
         if (empty($string)) {
-            $this->node->parentNode->removeChild($this->node);
+            if ($this->node->parentNode) {
+                $this->node->parentNode->removeChild($this->node);
+            }
 
             return $this;
         }
@@ -219,7 +221,7 @@ class SimpleXmlDom extends AbstractSimpleXmlDom implements \IteratorAggregate, S
         $tmpStr = $this->normalizeStringForComparision($string);
         if ($tmpDomOuterTextString !== $tmpStr) {
             throw new \RuntimeException(
-                'Not valid HTML fragment!' . "\n"
+                'Not valid XML fragment!' . "\n"
                 . $tmpDomOuterTextString . "\n" .
                 $tmpStr
             );
@@ -252,7 +254,9 @@ class SimpleXmlDom extends AbstractSimpleXmlDom implements \IteratorAggregate, S
     protected function replaceTextWithString($string): SimpleXmlDomInterface
     {
         if (empty($string)) {
-            $this->node->parentNode->removeChild($this->node);
+            if ($this->node->parentNode) {
+                $this->node->parentNode->removeChild($this->node);
+            }
 
             return $this;
         }
@@ -273,25 +277,25 @@ class SimpleXmlDom extends AbstractSimpleXmlDom implements \IteratorAggregate, S
      *
      * @param string      $name       <p>The name of the html-attribute.</p>
      * @param string|null $value      <p>Set to NULL or empty string, to remove the attribute.</p>
-     * @param bool        $strict     </p>
+     * @param bool        $strictEmptyValueCheck     </p>
      *                                $value must be NULL, to remove the attribute,
      *                                so that you can set an empty string as attribute-value e.g. autofocus=""
      *                                </p>
      *
      * @return SimpleXmlDomInterface
      */
-    public function setAttribute(string $name, $value = null, bool $strict = false): SimpleXmlDomInterface
+    public function setAttribute(string $name, $value = null, bool $strictEmptyValueCheck = false): SimpleXmlDomInterface
     {
         if (
-            ($strict && $value === null)
+            ($strictEmptyValueCheck && $value === null)
             ||
-            (!$strict && empty($value))
+            (!$strictEmptyValueCheck && empty($value))
         ) {
             /** @noinspection UnusedFunctionResultInspection */
             $this->removeAttribute($name);
         } elseif (\method_exists($this->node, 'setAttribute')) {
             /** @noinspection UnusedFunctionResultInspection */
-            $this->node->setAttribute($name, $value);
+            $this->node->setAttribute($name, HtmlDomParser::replaceToPreserveHtmlEntities((string) $value));
         }
 
         return $this;
@@ -375,7 +379,7 @@ class SimpleXmlDom extends AbstractSimpleXmlDom implements \IteratorAggregate, S
     }
 
     /**
-     * Find nodes with a CSS selector.
+     * Find nodes with a CSS or xPath selector.
      *
      * @param string $selector
      *
@@ -387,7 +391,7 @@ class SimpleXmlDom extends AbstractSimpleXmlDom implements \IteratorAggregate, S
     }
 
     /**
-     * Find nodes with a CSS selector.
+     * Find nodes with a CSS or xPath selector.
      *
      * @param string $selector
      *
@@ -399,7 +403,7 @@ class SimpleXmlDom extends AbstractSimpleXmlDom implements \IteratorAggregate, S
     }
 
     /**
-     * Find one node with a CSS selector.
+     * Find one node with a CSS or xPath selector.
      *
      * @param string $selector
      *
@@ -411,7 +415,7 @@ class SimpleXmlDom extends AbstractSimpleXmlDom implements \IteratorAggregate, S
     }
 
     /**
-     * Find one node with a CSS selector or false, if no element is found.
+     * Find one node with a CSS or xPath selector or false, if no element is found.
      *
      * @param string $selector
      *

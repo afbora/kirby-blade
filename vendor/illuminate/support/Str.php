@@ -107,7 +107,13 @@ class Str
      */
     public static function before($subject, $search)
     {
-        return $search === '' ? $subject : explode($search, $subject)[0];
+        if ($search === '') {
+            return $subject;
+        }
+
+        $result = strstr($subject, (string) $search, true);
+
+        return $result === false ? $subject : $result;
     }
 
     /**
@@ -371,6 +377,45 @@ class Str
     }
 
     /**
+     * Pad both sides of a string with another.
+     *
+     * @param  string  $value
+     * @param  int  $length
+     * @param  string  $pad
+     * @return string
+     */
+    public static function padBoth($value, $length, $pad = ' ')
+    {
+        return str_pad($value, $length, $pad, STR_PAD_BOTH);
+    }
+
+    /**
+     * Pad the left side of a string with another.
+     *
+     * @param  string  $value
+     * @param  int  $length
+     * @param  string  $pad
+     * @return string
+     */
+    public static function padLeft($value, $length, $pad = ' ')
+    {
+        return str_pad($value, $length, $pad, STR_PAD_LEFT);
+    }
+
+    /**
+     * Pad the right side of a string with another.
+     *
+     * @param  string  $value
+     * @param  int  $length
+     * @param  string  $pad
+     * @return string
+     */
+    public static function padRight($value, $length, $pad = ' ')
+    {
+        return str_pad($value, $length, $pad, STR_PAD_RIGHT);
+    }
+
+    /**
      * Parse a Class[@]method style callback into class and method.
      *
      * @param  string  $callback
@@ -485,6 +530,10 @@ class Str
      */
     public static function replaceLast($search, $replace, $subject)
     {
+        if ($search === '') {
+            return $subject;
+        }
+
         $position = strrpos($subject, $search);
 
         if ($position !== false) {

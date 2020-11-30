@@ -221,7 +221,10 @@ class SimpleHtmlDom extends AbstractSimpleHtmlDom implements \IteratorAggregate,
     protected function replaceNodeWithString(string $string): SimpleHtmlDomInterface
     {
         if (empty($string)) {
-            $this->node->parentNode->removeChild($this->node);
+            if ($this->node->parentNode) {
+                $this->node->parentNode->removeChild($this->node);
+            }
+            $this->node = new \DOMText();
 
             return $this;
         }
@@ -261,20 +264,22 @@ class SimpleHtmlDom extends AbstractSimpleHtmlDom implements \IteratorAggregate,
         ) {
             $html = $this->node->parentNode->getElementsByTagName('head')[0];
 
-            if ($this->node->parentNode->ownerDocument) {
+            if (
+                $html !== null
+                &&
+                $this->node->parentNode->ownerDocument
+            ) {
                 $fragment = $this->node->parentNode->ownerDocument->createDocumentFragment();
-                if ($html !== null) {
-                    /** @var \DOMNode $html */
-                    while ($html->childNodes->length > 0) {
-                        $tmpNode = $html->childNodes->item(0);
-                        if ($tmpNode !== null) {
-                            /** @noinspection UnusedFunctionResultInspection */
-                            $fragment->appendChild($tmpNode);
-                        }
+                /** @var \DOMNode $html */
+                while ($html->childNodes->length > 0) {
+                    $tmpNode = $html->childNodes->item(0);
+                    if ($tmpNode !== null) {
+                        /** @noinspection UnusedFunctionResultInspection */
+                        $fragment->appendChild($tmpNode);
                     }
-                    /** @noinspection UnusedFunctionResultInspection */
-                    $html->parentNode->replaceChild($fragment, $html);
                 }
+                /** @noinspection UnusedFunctionResultInspection */
+                $html->parentNode->replaceChild($fragment, $html);
             }
         }
 
@@ -291,7 +296,10 @@ class SimpleHtmlDom extends AbstractSimpleHtmlDom implements \IteratorAggregate,
     protected function replaceTextWithString($string): SimpleHtmlDomInterface
     {
         if (empty($string)) {
-            $this->node->parentNode->removeChild($this->node);
+            if ($this->node->parentNode) {
+                $this->node->parentNode->removeChild($this->node);
+            }
+            $this->node = new \DOMText();
 
             return $this;
         }
@@ -310,27 +318,27 @@ class SimpleHtmlDom extends AbstractSimpleHtmlDom implements \IteratorAggregate,
     /**
      * Set attribute value.
      *
-     * @param string      $name       <p>The name of the html-attribute.</p>
-     * @param string|null $value      <p>Set to NULL or empty string, to remove the attribute.</p>
-     * @param bool        $strict     </p>
+     * @param string      $name                     <p>The name of the html-attribute.</p>
+     * @param string|null $value                    <p>Set to NULL or empty string, to remove the attribute.</p>
+     * @param bool        $strictEmptyValueCheck <p>
      *                                $value must be NULL, to remove the attribute,
      *                                so that you can set an empty string as attribute-value e.g. autofocus=""
      *                                </p>
      *
      * @return SimpleHtmlDomInterface
      */
-    public function setAttribute(string $name, $value = null, bool $strict = false): SimpleHtmlDomInterface
+    public function setAttribute(string $name, $value = null, bool $strictEmptyValueCheck = false): SimpleHtmlDomInterface
     {
         if (
-            ($strict && $value === null)
+            ($strictEmptyValueCheck && $value === null)
             ||
-            (!$strict && empty($value))
+            (!$strictEmptyValueCheck && empty($value))
         ) {
             /** @noinspection UnusedFunctionResultInspection */
             $this->removeAttribute($name);
         } elseif (\method_exists($this->node, 'setAttribute')) {
             /** @noinspection UnusedFunctionResultInspection */
-            $this->node->setAttribute($name, $value);
+            $this->node->setAttribute($name, HtmlDomParser::replaceToPreserveHtmlEntities((string) $value));
         }
 
         return $this;
@@ -795,7 +803,28 @@ class SimpleHtmlDom extends AbstractSimpleHtmlDom implements \IteratorAggregate,
                 $this->changeElementName($item, 'simpleHtmlDomHtml');
             }
 
-            // Remove body element, preserving child nodes.
+            if ($newDocument->getIsDOMDocumentCreatedWithoutPTagWrapper()) {
+                // Remove <p>-element, preserving child nodes.
+                $pElement = $newDocument->getDocument()->getElementsByTagName('p')->item(0);
+                if ($pElement instanceof \DOMElement) {
+                    $fragment = $newDocument->getDocument()->createDocumentFragment();
+
+                    while ($pElement->childNodes->length > 0) {
+                        $tmpNode = $pElement->childNodes->item(0);
+                        if ($tmpNode !== null) {
+                            /** @noinspection UnusedFunctionResultInspection */
+                            $fragment->appendChild($tmpNode);
+                        }
+                    }
+
+                    if ($pElement->parentNode !== null) {
+                        /** @noinspection UnusedFunctionResultInspection */
+                        $pElement->parentNode->replaceChild($fragment, $pElement);
+                    }
+                }
+            }
+
+            // Remove <body>-element, preserving child nodes.
             $body = $newDocument->getDocument()->getElementsByTagName('body')->item(0);
             if ($body instanceof \DOMElement) {
                 $fragment = $newDocument->getDocument()->createDocumentFragment();
