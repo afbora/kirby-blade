@@ -1,46 +1,46 @@
 {
-    "name": "afbora/kirby-blade",
-    "description": "Enable Laravel Blade Template Engine for Kirby 3",
-    "keywords": [
-        "kirby",
-        "kirby-3",
-        "kirby3-plugin",
-        "kirby-plugin",
-        "kirby-blade",
-        "blade",
-        "laravel",
-        "view",
-        "template",
-        "template-engine"
+  "name": "afbora/kirby-blade",
+  "description": "Enable Laravel Blade Template Engine for Kirby 3",
+  "keywords": [
+    "kirby",
+    "kirby-3",
+    "kirby3-plugin",
+    "kirby-plugin",
+    "kirby-blade",
+    "blade",
+    "laravel",
+    "view",
+    "template",
+    "template-engine"
+  ],
+  "version": "1.9.1",
+  "type": "kirby-plugin",
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "Ahmet Bora",
+      "email": "ahmet.bora@pixelturk.net"
+    }
+  ],
+  "require": {
+    "php": "^7.3|^8.0",
+    "getkirby/composer-installer": "^1.2",
+    "illuminate/view": "^8.0",
+    "voku/html-min": "^4.4"
+  },
+  "config": {
+    "optimize-autoloader": true,
+    "preferred-install": "dist",
+    "sort-packages": true
+  },
+  "autoload": {
+    "files": [
+      "helpers.php"
     ],
-    "version": "1.9.0",
-    "type": "kirby-plugin",
-    "license": "MIT",
-    "authors": [
-        {
-            "name": "Ahmet Bora",
-            "email": "ahmet.bora@pixelturk.net"
-        }
-    ],
-    "require": {
-        "php": "^7.3",
-        "getkirby/composer-installer": "^1.2",
-        "illuminate/view": "^8.0",
-        "voku/html-min": "^4.4"
-    },
-    "config": {
-        "optimize-autoloader": true,
-        "preferred-install": "dist",
-        "sort-packages": true
-    },
-    "autoload": {
-        "files": [
-            "helpers.php"
-        ],
-        "psr-4": {
-            "Afbora\\": "src/"
-        }
-    },
-    "minimum-stability": "dev",
-    "prefer-stable": true
+    "psr-4": {
+      "Afbora\\": "src/"
+    }
+  },
+  "minimum-stability": "dev",
+  "prefer-stable": true
 }

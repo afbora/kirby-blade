@@ -31,6 +31,7 @@ use DateTimeInterface;
 use DateTimeZone;
 use InvalidArgumentException;
 use ReflectionException;
+use ReturnTypeWillChange;
 use Throwable;
 
 /**
@@ -631,6 +632,7 @@ trait Date
      *
      * @link http://php.net/manual/en/datetime.gettimezone.php
      */
+    #[ReturnTypeWillChange]
     public function getTimezone()
     {
         return CarbonTimeZone::instance(parent::getTimezone());
@@ -735,6 +737,30 @@ trait Date
         static::expectDateTime($date, ['null', 'string']);
 
         return $date instanceof self ? $date : static::instance($date);
+    }
+
+    /**
+     * Return the Carbon instance passed through, a now instance in UTC
+     * if null given or parse the input if string given (using current timezone
+     * then switching to UTC).
+     *
+     * @param Carbon|DateTimeInterface|string|null $date
+     *
+     * @return static
+     */
+    protected function resolveUTC($date = null): self
+    {
+        if (!$date) {
+            return static::now('UTC');
+        }
+
+        if (\is_string($date)) {
+            return static::parse($date, $this->getTimezone())->utc();
+        }
+
+        static::expectDateTime($date, ['null', 'string']);
+
+        return $date instanceof self ? $date : static::instance($date)->utc();
     }
 
     /**
@@ -1374,17 +1400,17 @@ trait Date
     /**
      * Returns the minutes offset to UTC if no arguments passed, else set the timezone with given minutes shift passed.
      *
-     * @param int|null $offset
+     * @param int|null $minuteOffset
      *
      * @return int|static
      */
-    public function utcOffset(int $offset = null)
+    public function utcOffset(int $minuteOffset = null)
     {
         if (\func_num_args() < 1) {
             return $this->offsetMinutes;
         }
 
-        return $this->setTimezone(static::safeCreateDateTimeZone($offset / static::MINUTES_PER_HOUR));
+        return $this->setTimezone(CarbonTimeZone::createFromMinuteOffset($minuteOffset));
     }
 
     /**
@@ -1398,6 +1424,7 @@ trait Date
      *
      * @return static
      */
+    #[ReturnTypeWillChange]
     public function setDate($year, $month, $day)
     {
         return parent::setDate((int) $year, (int) $month, (int) $day);
@@ -1414,6 +1441,7 @@ trait Date
      *
      * @return static
      */
+    #[ReturnTypeWillChange]
     public function setISODate($year, $week, $day = 1)
     {
         return parent::setISODate((int) $year, (int) $week, (int) $day);
@@ -1449,6 +1477,7 @@ trait Date
      *
      * @return static
      */
+    #[ReturnTypeWillChange]
     public function setTime($hour, $minute, $second = 0, $microseconds = 0)
     {
         return parent::setTime((int) $hour, (int) $minute, (int) $second, (int) $microseconds);
@@ -1463,6 +1492,7 @@ trait Date
      *
      * @return static
      */
+    #[ReturnTypeWillChange]
     public function setTimestamp($unixTimestamp)
     {
         [$timestamp, $microseconds] = self::getIntegerAndDecimalParts($unixTimestamp);
@@ -1521,6 +1551,7 @@ trait Date
      *
      * @return static
      */
+    #[ReturnTypeWillChange]
     public function setTimezone($value)
     {
         return parent::setTimezone(static::safeCreateDateTimeZone($value));
@@ -2295,10 +2326,10 @@ trait Date
             if ($macro instanceof Closure) {
                 $boundMacro = @Closure::bind($macro, null, static::class);
 
-                return \call_user_func_array($boundMacro ?: $macro, $parameters);
+                return ($boundMacro ?: $macro)(...$parameters);
             }
 
-            return \call_user_func_array($macro, $parameters);
+            return $macro(...$parameters);
         });
     }
 
@@ -2412,10 +2443,10 @@ trait Date
         if ($macro instanceof Closure) {
             $boundMacro = @$macro->bindTo($this, static::class) ?: @$macro->bindTo(null, static::class);
 
-            return \call_user_func_array($boundMacro ?: $macro, $parameters);
+            return ($boundMacro ?: $macro)(...$parameters);
         }
 
-        return \call_user_func_array($macro, $parameters);
+        return $macro(...$parameters);
     }
 
     protected function executeCallableWithContext($macro, ...$parameters)

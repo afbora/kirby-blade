@@ -19,6 +19,7 @@ use Carbon\Translator;
 use Closure;
 use DateInterval;
 use DateTimeInterface;
+use ReturnTypeWillChange;
 
 /**
  * Trait Difference.
@@ -117,6 +118,7 @@ trait Difference
      *
      * @return DateInterval
      */
+    #[ReturnTypeWillChange]
     public function diff($date = null, $absolute = false)
     {
         return parent::diff($this->resolveCarbon($date), (bool) $absolute);
@@ -495,8 +497,15 @@ trait Difference
     public function floatDiffInDays($date = null, $absolute = true)
     {
         $hoursDiff = $this->floatDiffInHours($date, $absolute);
+        $interval = $this->diff($date, $absolute);
 
-        return ($hoursDiff < 0 ? -1 : 1) * $this->diffInDays($date) + fmod($hoursDiff, static::HOURS_PER_DAY) / static::HOURS_PER_DAY;
+        if ($interval->y === 0 && $interval->m === 0 && $interval->d === 0) {
+            return $hoursDiff / static::HOURS_PER_DAY;
+        }
+
+        $daysDiff = (int) $interval->format('%r%a');
+
+        return $daysDiff + fmod($hoursDiff, static::HOURS_PER_DAY) / static::HOURS_PER_DAY;
     }
 
     /**
@@ -631,9 +640,11 @@ trait Difference
      */
     public function floatDiffInRealDays($date = null, $absolute = true)
     {
-        $hoursDiff = $this->floatDiffInRealHours($date, $absolute);
+        $date = $this->resolveUTC($date);
+        $utc = $this->copy()->utc();
+        $hoursDiff = $utc->floatDiffInRealHours($date, $absolute);
 
-        return ($hoursDiff < 0 ? -1 : 1) * $this->diffInDays($date) + fmod($hoursDiff, static::HOURS_PER_DAY) / static::HOURS_PER_DAY;
+        return ($hoursDiff < 0 ? -1 : 1) * $utc->diffInDays($date) + fmod($hoursDiff, static::HOURS_PER_DAY) / static::HOURS_PER_DAY;
     }
 
     /**
@@ -1082,7 +1093,10 @@ trait Difference
     }
 
     /**
-     * Returns either the close date "Friday 15h30", or a calendar date "10/09/2017" is farthest than 7 days from now.
+     * Returns either day of week + time (e.g. "Last Friday at 3:30 PM") if reference time is within 7 days,
+     * or a calendar date (e.g. "10/29/2017") otherwise.
+     *
+     * Language, date and time formats will change according to the current locale.
      *
      * @param Carbon|\DateTimeInterface|string|null $referenceTime
      * @param array                                 $formats

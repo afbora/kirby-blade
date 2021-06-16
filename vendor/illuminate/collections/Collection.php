@@ -4,6 +4,8 @@ namespace Illuminate\Support;
 
 use ArrayAccess;
 use ArrayIterator;
+use Illuminate\Collections\ItemNotFoundException;
+use Illuminate\Collections\MultipleItemsFoundException;
 use Illuminate\Support\Traits\EnumeratesValues;
 use Illuminate\Support\Traits\Macroable;
 use stdClass;
@@ -260,7 +262,7 @@ class Collection implements ArrayAccess, Enumerable
     /**
      * Retrieve duplicate items from the collection.
      *
-     * @param  callable|null  $callback
+     * @param  callable|string|null  $callback
      * @param  bool  $strict
      * @return static
      */
@@ -288,7 +290,7 @@ class Collection implements ArrayAccess, Enumerable
     /**
      * Retrieve duplicate items from the collection using strict comparison.
      *
-     * @param  callable|null  $callback
+     * @param  callable|string|null  $callback
      * @return static
      */
     public function duplicatesStrict($callback = null)
@@ -513,10 +515,10 @@ class Collection implements ArrayAccess, Enumerable
         $first = $this->first();
 
         if (is_array($first) || (is_object($first) && ! $first instanceof Stringable)) {
-            return implode($glue, $this->pluck($value)->all());
+            return implode($glue ?? '', $this->pluck($value)->all());
         }
 
-        return implode($value, $this->items);
+        return implode($value ?? '', $this->items);
     }
 
     /**
@@ -551,6 +553,16 @@ class Collection implements ArrayAccess, Enumerable
     public function isEmpty()
     {
         return empty($this->items);
+    }
+
+    /**
+     * Determine if the collection contains a single item.
+     *
+     * @return bool
+     */
+    public function containsOneItem()
+    {
+        return $this->count() === 1;
     }
 
     /**
@@ -873,18 +885,6 @@ class Collection implements ArrayAccess, Enumerable
     }
 
     /**
-     * Reduce the collection to a single value.
-     *
-     * @param  callable  $callback
-     * @param  mixed  $initial
-     * @return mixed
-     */
-    public function reduce(callable $callback, $initial = null)
-    {
-        return array_reduce($this->items, $callback, $initial);
-    }
-
-    /**
      * Replace the collection items with the given items.
      *
      * @param  mixed  $items
@@ -1053,6 +1053,36 @@ class Collection implements ArrayAccess, Enumerable
     }
 
     /**
+     * Get the first item in the collection, but only if exactly one item exists. Otherwise, throw an exception.
+     *
+     * @param  mixed  $key
+     * @param  mixed  $operator
+     * @param  mixed  $value
+     * @return mixed
+     *
+     * @throws \Illuminate\Collections\ItemNotFoundException
+     * @throws \Illuminate\Collections\MultipleItemsFoundException
+     */
+    public function sole($key = null, $operator = null, $value = null)
+    {
+        $filter = func_num_args() > 1
+            ? $this->operatorForWhere(...func_get_args())
+            : $key;
+
+        $items = $this->when($filter)->filter($filter);
+
+        if ($items->isEmpty()) {
+            throw new ItemNotFoundException;
+        }
+
+        if ($items->count() > 1) {
+            throw new MultipleItemsFoundException;
+        }
+
+        return $items->first();
+    }
+
+    /**
      * Chunk the collection into chunks of the given size.
      *
      * @param  int  $size
@@ -1098,7 +1128,7 @@ class Collection implements ArrayAccess, Enumerable
 
         $callback && is_callable($callback)
             ? uasort($items, $callback)
-            : asort($items, $callback);
+            : asort($items, $callback ?? SORT_REGULAR);
 
         return new static($items);
     }
@@ -1128,7 +1158,7 @@ class Collection implements ArrayAccess, Enumerable
      */
     public function sortBy($callback, $options = SORT_REGULAR, $descending = false)
     {
-        if (is_array($callback)) {
+        if (is_array($callback) && ! is_callable($callback)) {
             return $this->sortByMany($callback);
         }
 
@@ -1180,7 +1210,7 @@ class Collection implements ArrayAccess, Enumerable
                 if (is_callable($prop)) {
                     $result = $prop($a, $b);
                 } else {
-                    $values = [Arr::get($a, $prop), Arr::get($b, $prop)];
+                    $values = [data_get($a, $prop), data_get($b, $prop)];
 
                     if (! $ascending) {
                         $values = array_reverse($values);

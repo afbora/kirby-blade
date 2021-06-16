@@ -13,8 +13,14 @@ use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\DBAL\Types\ConversionException;
 use Exception;
 
+/**
+ * @template T of CarbonInterface
+ */
 trait CarbonTypeConverter
 {
+    /**
+     * @return class-string<T>
+     */
     protected function getCarbonClassName(): string
     {
         return Carbon::class;
@@ -35,13 +41,15 @@ trait CarbonTypeConverter
             return preg_replace('/\(\d+\)/', "($precision)", $type);
         }
 
-        list($before, $after) = explode(' ', "$type ");
+        [$before, $after] = explode(' ', "$type ");
 
         return trim("$before($precision) $after");
     }
 
     /**
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
+     *
+     * @return T|null
      */
     public function convertToPHPValue($value, AbstractPlatform $platform)
     {
@@ -78,6 +86,8 @@ trait CarbonTypeConverter
 
     /**
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
+     *
+     * @return string|null
      */
     public function convertToDatabaseValue($value, AbstractPlatform $platform)
     {

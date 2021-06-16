@@ -668,8 +668,8 @@ interface CarbonInterface extends DateTimeInterface, JsonSerializable
      * Please see the testing aids section (specifically static::setTestNow())
      * for more on the possibility of this constructor returning a test instance.
      *
-     * @param string|null              $time
-     * @param DateTimeZone|string|null $tz
+     * @param DateTimeInterface|string|null $time
+     * @param DateTimeZone|string|null      $tz
      *
      * @throws InvalidFormatException
      */
@@ -888,7 +888,10 @@ interface CarbonInterface extends DateTimeInterface, JsonSerializable
     public function betweenIncluded($date1, $date2): bool;
 
     /**
-     * Returns either the close date "Friday 15h30", or a calendar date "10/09/2017" is farthest than 7 days from now.
+     * Returns either day of week + time (e.g. "Last Friday at 3:30 PM") if reference time is within 7 days,
+     * or a calendar date (e.g. "10/29/2017") otherwise.
+     *
+     * Language, date and time formats will change according to the current locale.
      *
      * @param Carbon|\DateTimeInterface|string|null $referenceTime
      * @param array                                 $formats
@@ -1222,6 +1225,25 @@ interface CarbonInterface extends DateTimeInterface, JsonSerializable
      * @return static|false
      */
     public static function createSafe($year = null, $month = null, $day = null, $hour = null, $minute = null, $second = null, $tz = null);
+
+    /**
+     * Create a new Carbon instance from a specific date and time using strict validation.
+     *
+     * @see create()
+     *
+     * @param int|null                 $year
+     * @param int|null                 $month
+     * @param int|null                 $day
+     * @param int|null                 $hour
+     * @param int|null                 $minute
+     * @param int|null                 $second
+     * @param DateTimeZone|string|null $tz
+     *
+     * @throws InvalidFormatException
+     *
+     * @return static
+     */
+    public static function createStrict(?int $year = 0, ?int $month = 1, ?int $day = 1, ?int $hour = 0, ?int $minute = 0, ?int $second = 0, $tz = null);
 
     /**
      * Get/set the day of year.
@@ -2281,7 +2303,7 @@ interface CarbonInterface extends DateTimeInterface, JsonSerializable
      *
      * @return string
      */
-    public function getTranslationMessage(string $key, string $locale = null, string $default = null, $translator = null);
+    public function getTranslationMessage(string $key, ?string $locale = null, ?string $default = null, $translator = null);
 
     /**
      * Returns raw translation message for a given key.
@@ -2293,7 +2315,7 @@ interface CarbonInterface extends DateTimeInterface, JsonSerializable
      *
      * @return string
      */
-    public static function getTranslationMessageWith($translator, string $key, string $locale = null, string $default = null);
+    public static function getTranslationMessageWith($translator, string $key, ?string $locale = null, ?string $default = null);
 
     /**
      * Get the default translator instance in use.
@@ -2627,6 +2649,13 @@ interface CarbonInterface extends DateTimeInterface, JsonSerializable
     public function isEndOfDay($checkMicroseconds = false);
 
     /**
+     * Returns true if the date was created using CarbonImmutable::endOfTime()
+     *
+     * @return bool
+     */
+    public function isEndOfTime(): bool;
+
+    /**
      * Determines if the instance is in the future, ie. greater (after) than now.
      *
      * @example
@@ -2837,6 +2866,13 @@ interface CarbonInterface extends DateTimeInterface, JsonSerializable
     public function isStartOfDay($checkMicroseconds = false);
 
     /**
+     * Returns true if the date was created using CarbonImmutable::startOfTime()
+     *
+     * @return bool
+     */
+    public function isStartOfTime(): bool;
+
+    /**
      * Returns true if the strict mode is globally in use, false else.
      * (It can be overridden in specific instances.)
      *
@@ -2917,7 +2953,7 @@ interface CarbonInterface extends DateTimeInterface, JsonSerializable
      *
      * @return string
      */
-    public function isoFormat(string $format, string $originalFormat = null): string;
+    public function isoFormat(string $format, ?string $originalFormat = null): string;
 
     /**
      * Get/set the week number using given first day of week and first
@@ -3049,7 +3085,7 @@ interface CarbonInterface extends DateTimeInterface, JsonSerializable
      *
      * @return $this|string
      */
-    public function locale(string $locale = null, ...$fallbackLocales);
+    public function locale(?string $locale = null, ...$fallbackLocales);
 
     /**
      * Returns true if the given locale is internally supported and has words for 1-day diff (just now, yesterday, tomorrow).
@@ -3406,7 +3442,7 @@ interface CarbonInterface extends DateTimeInterface, JsonSerializable
      *
      * @return string
      */
-    public function ordinal(string $key, string $period = null): string;
+    public function ordinal(string $key, ?string $period = null): string;
 
     /**
      * Create a carbon instance from a string.
@@ -4720,7 +4756,7 @@ interface CarbonInterface extends DateTimeInterface, JsonSerializable
      *
      * @return string
      */
-    public function translate(string $key, array $parameters = [], $number = null, \Symfony\Component\Translation\TranslatorInterface $translator = null, bool $altNumbers = false): string;
+    public function translate(string $key, array $parameters = [], $number = null, ?\Symfony\Component\Translation\TranslatorInterface $translator = null, bool $altNumbers = false): string;
 
     /**
      * Returns the alternative number for a given integer if available in the current locale.
@@ -4886,11 +4922,11 @@ interface CarbonInterface extends DateTimeInterface, JsonSerializable
     /**
      * Returns the minutes offset to UTC if no arguments passed, else set the timezone with given minutes shift passed.
      *
-     * @param int|null $offset
+     * @param int|null $minuteOffset
      *
      * @return int|static
      */
-    public function utcOffset(int $offset = null);
+    public function utcOffset(?int $minuteOffset = null);
 
     /**
      * Returns the milliseconds timestamps used amongst other by Date javascript objects.
