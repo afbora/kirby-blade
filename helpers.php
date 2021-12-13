@@ -2,9 +2,13 @@
 
 function _e($value, $doubleEncode = true)
 {
+    if ($value instanceof DeferringDisplayableValue) {
+        $value = $value->resolveDisplayableValue();
+    }
+
     if ($value instanceof Htmlable) {
         return $value->toHtml();
     }
 
-    return htmlspecialchars($value, ENT_QUOTES, 'UTF-8', $doubleEncode);
+    return htmlspecialchars($value ?? '', ENT_QUOTES, 'UTF-8', $doubleEncode);
 }

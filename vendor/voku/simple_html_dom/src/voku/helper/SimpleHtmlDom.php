@@ -685,6 +685,28 @@ class SimpleHtmlDom extends AbstractSimpleHtmlDom implements \IteratorAggregate,
     }
 
     /**
+     * Returns the previous sibling of node.
+     *
+     * @return SimpleHtmlDomInterface|null
+     */
+    public function previousNonWhitespaceSibling()
+    {
+        /** @var \DOMNode|null $node */
+        $node = $this->node->previousSibling;
+
+        while ($node && !\trim($node->textContent)) {
+            /** @var \DOMNode|null $node */
+            $node = $node->previousSibling;
+        }
+
+        if ($node === null) {
+            return null;
+        }
+
+        return new static($node);
+    }
+
+    /**
      * @param string|string[]|null $value <p>
      *                                    null === get the current input value
      *                                    text === set a new input value

@@ -259,6 +259,16 @@ class Stringable implements JsonSerializable
     }
 
     /**
+     * Determine if a given string is a valid UUID.
+     *
+     * @return bool
+     */
+    public function isUuid()
+    {
+        return Str::isUuid($this->value);
+    }
+
+    /**
      * Determine if the given string is empty.
      *
      * @return bool
@@ -330,6 +340,20 @@ class Stringable implements JsonSerializable
     public function markdown(array $options = [])
     {
         return new static(Str::markdown($this->value, $options));
+    }
+
+    /**
+     * Masks a portion of a string with a repeated character.
+     *
+     * @param  string  $character
+     * @param  int  $index
+     * @param  int|null  $length
+     * @param  string  $encoding
+     * @return static
+     */
+    public function mask($character, $index, $length = null, $encoding = 'UTF-8')
+    {
+        return new static(Str::mask($this->value, $character, $index, $length, $encoding));
     }
 
     /**
@@ -469,6 +493,16 @@ class Stringable implements JsonSerializable
     }
 
     /**
+     * Reverse the string.
+     *
+     * @return static
+     */
+    public function reverse()
+    {
+        return new static(Str::reverse($this->value));
+    }
+
+    /**
      * Repeat the string.
      *
      * @param  int  $times
@@ -556,6 +590,17 @@ class Stringable implements JsonSerializable
     }
 
     /**
+     * Strip HTML and PHP tags from the given string.
+     *
+     * @param  string  $allowedTags
+     * @return static
+     */
+    public function stripTags($allowedTags = null)
+    {
+        return new static(strip_tags($this->value, $allowedTags));
+    }
+
+    /**
      * Convert the given string to upper-case.
      *
      * @return static
@@ -573,6 +618,16 @@ class Stringable implements JsonSerializable
     public function title()
     {
         return new static(Str::title($this->value));
+    }
+
+    /**
+     * Convert the given string to title case for each word.
+     *
+     * @return static
+     */
+    public function headline()
+    {
+        return new static(Str::headline($this->value));
     }
 
     /**
@@ -768,7 +823,7 @@ class Stringable implements JsonSerializable
     /**
      * Dump the string and end the script.
      *
-     * @return void
+     * @return never
      */
     public function dd()
     {
@@ -782,6 +837,7 @@ class Stringable implements JsonSerializable
      *
      * @return string
      */
+    #[\ReturnTypeWillChange]
     public function jsonSerialize()
     {
         return $this->__toString();

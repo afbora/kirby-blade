@@ -10,6 +10,7 @@ use InvalidArgumentException;
 class BladeCompiler extends Compiler implements CompilerInterface
 {
     use Concerns\CompilesAuthorizations,
+        Concerns\CompilesClasses,
         Concerns\CompilesComments,
         Concerns\CompilesComponents,
         Concerns\CompilesConditionals,
@@ -19,6 +20,7 @@ class BladeCompiler extends Compiler implements CompilerInterface
         Concerns\CompilesIncludes,
         Concerns\CompilesInjections,
         Concerns\CompilesJson,
+        Concerns\CompilesJs,
         Concerns\CompilesLayouts,
         Concerns\CompilesLoops,
         Concerns\CompilesRawPhp,

@@ -7,9 +7,9 @@
 [![Release](https://img.shields.io/github/v/release/afbora/kirby-blade?style=flat-square)](https://github.com/afbora/kirby-blade)
 [![License](https://img.shields.io/github/license/afbora/kirby-blade?style=flat-square)](https://github.com/afbora/kirby-blade)
 
-Kirby Blade use Laravel `illuminate/view` 7.x package and compatible with Kirby 3.
+Kirby Blade use Laravel `illuminate/view` 8.x package and compatible with Kirby 3.
 
-This package enable [Laravel Blade](https://laravel.com/docs/7.x/blade) for your own Kirby applications.
+This package enable [Laravel Blade](https://laravel.com/docs/8.x/blade) for your own Kirby applications.
 
 ## Installation
 
@@ -33,9 +33,9 @@ According to Laravel Blade documentation is:
 
 ## Usage
 
-You can use the power of Blade like [Layouts](https://laravel.com/docs/7.x/blade#template-inheritance), [Control Structures](https://laravel.com/docs/7.x/blade#control-structures), [Forms](https://laravel.com/docs/7.x/blade#forms), [Sub-Views](https://laravel.com/docs/7.x/blade#including-subviews), [Components](https://laravel.com/docs/7.x/blade#components), [Directives](https://laravel.com/docs/7.x/blade#extending-blade) and your custom if statements.
+You can use the power of Blade like [Layouts](https://laravel.com/docs/8.x/blade#building-layouts), [Forms](https://laravel.com/docs/8.x/blade#forms), [Sub-Views](https://laravel.com/docs/8.x/blade#including-subviews), [Components](https://laravel.com/docs/8.x/blade#components), [Directives](https://laravel.com/docs/8.x/blade#blade-directives) and your custom if statements.
 
-All the documentation about Laravel Blade is in the [official documentation](https://laravel.com/docs/7.x/blade).
+All the documentation about Laravel Blade is in the [official documentation](https://laravel.com/docs/8.x/blade).
 
 ## Options
 
@@ -193,19 +193,24 @@ After declaration you can use it like:
 | doRemoveWhitespaceAroundTags | remove whitespace around tags (depends on "doOptimizeViaHtmlDomParser(true)") |
 | doOptimizeAttributes | optimize html attributes (depends on "doOptimizeViaHtmlDomParser(true)") |
 | doRemoveHttpPrefixFromAttributes | remove optional "http:"-prefix from attributes (depends on "doOptimizeAttributes(true)") |
+| doRemoveHttpsPrefixFromAttributes | remove optional "https:"-prefix from attributes (depends on "doOptimizeAttributes(true)") |
+| doKeepHttpAndHttpsPrefixOnExternalAttributes | keep "http:"- and "https:"-prefix for all external links |
+| doMakeSameDomainsLinksRelative | make some links relative, by removing the domain from attributes |
 | doRemoveDefaultAttributes | remove defaults (depends on "doOptimizeAttributes(true)" | disabled by default) |
 | doRemoveDeprecatedAnchorName | remove deprecated anchor-jump (depends on "doOptimizeAttributes(true)") |
 | doRemoveDeprecatedScriptCharsetAttribute | remove deprecated charset-attribute - the browser will use the charset from the HTTP-Header, anyway (depends on "doOptimizeAttributes(true)") |
 | doRemoveDeprecatedTypeFromScriptTag | remove deprecated script-mime-types (depends on "doOptimizeAttributes(true)") |
 | doRemoveDeprecatedTypeFromStylesheetLink | remove "type=text/css" for css links (depends on "doOptimizeAttributes(true)") |
+| doRemoveDeprecatedTypeFromStyleAndLinkTag | remove "type=text/css" from all links and styles |
+| doRemoveDefaultMediaTypeFromStyleAndLinkTag | remove "media="all" from all links and styles |
+| doRemoveDefaultTypeFromButton | remove type="submit" from button tags |
 | doRemoveEmptyAttributes | remove some empty attributes (depends on "doOptimizeAttributes(true)") |
-| doRemoveValueFromEmptyInput | remove 'value=""' from empty <input> (depends on "doOptimizeAttributes(true)") |
+| doRemoveValueFromEmptyInput | remove 'value=""' from empty `<input>` (depends on "doOptimizeAttributes(true)") |
 | doSortCssClassNames | sort css-class-names, for better gzip results (depends on "doOptimizeAttributes(true)") |
 | doSortHtmlAttributes | sort html-attributes, for better gzip results (depends on "doOptimizeAttributes(true)") |
 | doRemoveSpacesBetweenTags | remove more (aggressive) spaces in the dom (disabled by default) |
 | doRemoveOmittedQuotes | remove quotes e.g. class="lall" => class=lall |
 | doRemoveOmittedHtmlTags | remove ommitted html tags e.g. \<p\>lall\<\/p\> => \<p\>lall |
-
 You can get detailed information from `HtmlMin` library: [voku/HtmlMin](https://github.com/voku/HtmlMin#options)
 
 *Developed from [Kirby Blade Repository](https://github.com/beebmx/kirby-blade) maintained by [@beebmx](https://github.com/beebmx)*
