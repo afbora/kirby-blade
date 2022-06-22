@@ -7,13 +7,6 @@ use Illuminate\View\Compilers\BladeCompiler as Compiler;
 class BladeCompiler extends Compiler
 {
     /**
-     * The "regular" / legacy echo string format.
-     *
-     * @var string
-     */
-    protected $echoFormat = '_e(%s)';
-
-    /**
      * Register an "if" statement directive.
      *
      * @param string $name
@@ -39,25 +32,5 @@ class BladeCompiler extends Compiler
         $this->directive('end' . $name, function () {
             return '<?php endif; ?>';
         });
-    }
-
-    /**
-     * Set the "echo" format to double encode entities.
-     *
-     * @return void
-     */
-    public function withDoubleEncoding()
-    {
-        $this->setEchoFormat('_e(%s, true)');
-    }
-
-    /**
-     * Set the "echo" format to not double encode entities.
-     *
-     * @return void
-     */
-    public function withoutDoubleEncoding()
-    {
-        $this->setEchoFormat('_e(%s, false)');
     }
 }

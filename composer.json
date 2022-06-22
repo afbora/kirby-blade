@@ -13,7 +13,7 @@
     "template",
     "template-engine"
   ],
-  "version": "1.9.2",
+  "version": "2.0.0-rc.1",
   "type": "kirby-plugin",
   "license": "MIT",
   "authors": [
@@ -23,20 +23,20 @@
     }
   ],
   "require": {
-    "php": "^7.3|^8.0",
+    "php": "^7.4|^8.0",
     "getkirby/composer-installer": "^1.2",
-    "illuminate/view": "^8.0",
-    "voku/html-min": "^4.4"
+    "illuminate/view": "^9.0",
+    "voku/html-min": "^4.5"
   },
   "config": {
     "optimize-autoloader": true,
     "preferred-install": "dist",
     "sort-packages": true
   },
+  "extra": {
+    "installer-name": "kirby-blade"
+  },
   "autoload": {
-    "files": [
-      "helpers.php"
-    ],
     "psr-4": {
       "Afbora\\": "src/"
     }
