@@ -25,6 +25,20 @@ composer require afbora/kirby-blade
 git submodule add https://github.com/afbora/kirby-blade.git site/plugins/kirby-blade
 ```
 
+### Manual
+
+- Download the latest release
+- Unzip downloaded file
+- Copy/paste unzipped folder in your /site/plugins folder
+
+#### Override Kirby `e()` helper
+
+If you manually installed the plugin, you need to override Kirby's `e()` helper function from root `index.php`
+
+```php
+define('KIRBY_HELPER_E', false);
+```
+
 ## What is Blade?
 
 According to Laravel Blade documentation is:
