@@ -11,6 +11,21 @@ Kirby Blade use Laravel `illuminate/view` 9.x package and compatible with Kirby 
 
 This package enable [Laravel Blade](https://laravel.com/docs/9.x/blade) for your own Kirby applications.
 
+## Kirby compatibility table
+
+| Kirby version | Compatible plugin version |
+|:--------------|:--------------------------|
+| ^3.6          | ^1.9                      |
+| ^3.7          | ^2.0                      |
+
+## Important note before installation for Kirby
+
+You should to override Kirby's `e()` helper function from root `index.php` of your application. Because Laravel Blade also has a helper function called `e()`.
+
+```php
+define('KIRBY_HELPER_E', false);
+```
+
 ## Installation
 
 ### Installation with composer
@@ -30,14 +45,6 @@ git submodule add https://github.com/afbora/kirby-blade.git site/plugins/kirby-b
 - Download the latest release
 - Unzip downloaded file
 - Copy/paste unzipped folder in your /site/plugins folder
-
-#### Override Kirby `e()` helper
-
-If you manually installed the plugin, you need to override Kirby's `e()` helper function from root `index.php`
-
-```php
-define('KIRBY_HELPER_E', false);
-```
 
 ## What is Blade?
 

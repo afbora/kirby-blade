@@ -3,12 +3,6 @@
 use Afbora\Template;
 use Kirby\Cms\App as Kirby;
 
-// override Kirby `e()` function to use Laravel `e()` function
-// if you don't install via composer, you need to define `KIRBY_HELPER_E` from root index.php
-if (defined('KIRBY_HELPER_E') === false) {
-    define('KIRBY_HELPER_E', false);
-}
-
 @include_once __DIR__ . '/vendor/autoload.php';
 
 Kirby::plugin('afbora/blade', [
