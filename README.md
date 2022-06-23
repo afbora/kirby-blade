@@ -23,7 +23,8 @@ This package enable [Laravel Blade](https://laravel.com/docs/9.x/blade) for your
 You should to override Kirby's `e()` helper function from root `index.php` of your application. Because Laravel Blade also has a helper function called `e()`.
 
 ```php
-define('KIRBY_HELPER_E', false);
+// override Kirby `e()` helper for Blade plugin
+const KIRBY_HELPER_E = false;
 ```
 
 ## Installation
