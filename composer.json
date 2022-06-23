@@ -19,9 +19,13 @@
   "authors": [
     {
       "name": "Ahmet Bora",
-      "email": "ahmet.bora@pixelturk.net"
+      "email": "ahmet@getkirby.com"
     }
   ],
+  "homepage": "https://github.com/afbora/kirby-blade",
+  "support": {
+    "email": "ahmet@getkirby.com"
+  },
   "require": {
     "php": "^7.4|^8.0",
     "getkirby/composer-installer": "^1.2",

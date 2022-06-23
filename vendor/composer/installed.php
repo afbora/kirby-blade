@@ -1,8 +1,8 @@
 <?php return array(
     'root' => array(
         'name' => 'afbora/kirby-blade',
-        'pretty_version' => '2.0.0',
-        'version' => '2.0.0.0',
+        'pretty_version' => '2.0.0-rc.2',
+        'version' => '2.0.0.0-RC2',
         'reference' => NULL,
         'type' => 'kirby-plugin',
         'install_path' => __DIR__ . '/../../',
@@ -11,8 +11,8 @@
     ),
     'versions' => array(
         'afbora/kirby-blade' => array(
-            'pretty_version' => '2.0.0',
-            'version' => '2.0.0.0',
+            'pretty_version' => '2.0.0-rc.2',
+            'version' => '2.0.0.0-RC2',
             'reference' => NULL,
             'type' => 'kirby-plugin',
             'install_path' => __DIR__ . '/../../',
