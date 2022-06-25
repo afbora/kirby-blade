@@ -24,7 +24,7 @@ You should to override Kirby's `e()` helper function from root `index.php` of yo
 
 ```php
 // override Kirby `e()` helper for Blade plugin
-const KIRBY_HELPER_E = false;
+define('KIRBY_HELPER_E', false);
 ```
 
 ## Installation
