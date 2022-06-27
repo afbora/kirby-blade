@@ -1,5 +1,13 @@
 # Kirby Blade
 
+Update: 27 June 2022
+
+There is now an official fork of Laravel Breadcrumbs:
+
+https://github.com/lukasleitsch/kirby-blade
+
+---
+
 [![Source](https://img.shields.io/badge/source-afbora/kirby--blade-blue?style=flat-square)](https://github.com/afbora/kirby-blade)
 [![Download](https://img.shields.io/packagist/dt/afbora/kirby-blade?style=flat-square)](https://github.com/afbora/kirby-blade)
 [![Open Issues](https://img.shields.io/github/issues-raw/afbora/kirby-blade?style=flat-square)](https://github.com/afbora/kirby-blade)
