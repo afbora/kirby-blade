@@ -6,9 +6,9 @@ use Afbora\Blade\Blade;
 use Exception;
 use Kirby\Cms\App as Kirby;
 use Kirby\Cms\Template as KirbyTemplate;
-use Kirby\Toolkit\F;
+use Kirby\Filesystem\F;
+use Kirby\Filesystem\Dir;
 use Kirby\Toolkit\Tpl;
-use Kirby\Toolkit\Dir;
 use voku\helper\HtmlMin;
 
 class Template extends KirbyTemplate

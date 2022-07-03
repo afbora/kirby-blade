@@ -4,6 +4,7 @@ namespace Afbora\View;
 
 use Afbora\View\Compiler\BladeCompiler;
 use Illuminate\View\Engines\CompilerEngine;
+use Illuminate\View\Factory;
 use Illuminate\View\ViewServiceProvider as ViewProvider;
 
 class ViewServiceProvider extends ViewProvider
@@ -29,18 +30,5 @@ class ViewServiceProvider extends ViewProvider
         $resolver->register('blade', function () {
             return new CompilerEngine($this->app['blade.compiler']);
         });
-    }
-
-    /**
-     * Create a new Factory Instance.
-     *
-     * @param \Illuminate\View\Engines\EngineResolver $resolver
-     * @param \Illuminate\View\ViewFinderInterface $finder
-     * @param \Illuminate\Contracts\Events\Dispatcher $events
-     * @return \Afbora\View\Factory
-     */
-    protected function createFactory($resolver, $finder, $events)
-    {
-        return new Factory($resolver, $finder, $events);
     }
 }

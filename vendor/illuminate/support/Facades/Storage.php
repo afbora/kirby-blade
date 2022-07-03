@@ -6,6 +6,7 @@ use Illuminate\Filesystem\Filesystem;
 
 /**
  * @method static \Illuminate\Contracts\Filesystem\Filesystem assertExists(string|array $path)
+ * @method static \Illuminate\Contracts\Filesystem\Filesystem assertDirectoryEmpty(string $path)
  * @method static \Illuminate\Contracts\Filesystem\Filesystem assertMissing(string|array $path)
  * @method static \Illuminate\Contracts\Filesystem\Filesystem cloud()
  * @method static \Illuminate\Contracts\Filesystem\Filesystem build(string|array $root)
@@ -40,6 +41,8 @@ use Illuminate\Filesystem\Filesystem;
  * @method static string|false mimeType(string $path)
  * @method static string|false putFile(string $path, \Illuminate\Http\File|\Illuminate\Http\UploadedFile|string $file, mixed $options = [])
  * @method static string|false putFileAs(string $path, \Illuminate\Http\File|\Illuminate\Http\UploadedFile|string $file, string $name, mixed $options = [])
+ * @method static void macro(string $name, object|callable $macro)
+ * @method static void buildTemporaryUrlsUsing(\Closure $callback)
  *
  * @see \Illuminate\Filesystem\FilesystemManager
  */
@@ -68,7 +71,9 @@ class Storage extends Facade
             'root' => $root,
         ])));
 
-        return $fake;
+        return tap($fake)->buildTemporaryUrlsUsing(function ($path, $expiration) {
+            return URL::to($path.'?expiration='.$expiration->getTimestamp());
+        });
     }
 
     /**

@@ -1,5 +1,13 @@
 # Kirby Blade
 
+Update: 27 June 2022
+
+There is now an official fork of Laravel Breadcrumbs:
+
+https://github.com/lukasleitsch/kirby-blade
+
+---
+
 [![Source](https://img.shields.io/badge/source-afbora/kirby--blade-blue?style=flat-square)](https://github.com/afbora/kirby-blade)
 [![Download](https://img.shields.io/packagist/dt/afbora/kirby-blade?style=flat-square)](https://github.com/afbora/kirby-blade)
 [![Open Issues](https://img.shields.io/github/issues-raw/afbora/kirby-blade?style=flat-square)](https://github.com/afbora/kirby-blade)
@@ -7,9 +15,25 @@
 [![Release](https://img.shields.io/github/v/release/afbora/kirby-blade?style=flat-square)](https://github.com/afbora/kirby-blade)
 [![License](https://img.shields.io/github/license/afbora/kirby-blade?style=flat-square)](https://github.com/afbora/kirby-blade)
 
-Kirby Blade use Laravel `illuminate/view` 8.x package and compatible with Kirby 3.
+Kirby Blade use Laravel `illuminate/view` 9.x package and compatible with Kirby 3.
 
-This package enable [Laravel Blade](https://laravel.com/docs/8.x/blade) for your own Kirby applications.
+This package enable [Laravel Blade](https://laravel.com/docs/9.x/blade) for your own Kirby applications.
+
+## Kirby compatibility table
+
+| Kirby version | Compatible plugin version |
+|:--------------|:--------------------------|
+| ^3.6          | ^1.9                      |
+| ^3.7          | ^2.0                      |
+
+## Important note before installation for Kirby
+
+You should to override Kirby's `e()` helper function from root `index.php` of your application. Because Laravel Blade also has a helper function called `e()`.
+
+```php
+// override Kirby `e()` helper for Blade plugin
+define('KIRBY_HELPER_E', false);
+```
 
 ## Installation
 
@@ -25,6 +49,12 @@ composer require afbora/kirby-blade
 git submodule add https://github.com/afbora/kirby-blade.git site/plugins/kirby-blade
 ```
 
+### Manual
+
+- Download the latest release
+- Unzip downloaded file
+- Copy/paste unzipped folder in your /site/plugins folder
+
 ## What is Blade?
 
 According to Laravel Blade documentation is:
@@ -33,9 +63,9 @@ According to Laravel Blade documentation is:
 
 ## Usage
 
-You can use the power of Blade like [Layouts](https://laravel.com/docs/8.x/blade#building-layouts), [Forms](https://laravel.com/docs/8.x/blade#forms), [Sub-Views](https://laravel.com/docs/8.x/blade#including-subviews), [Components](https://laravel.com/docs/8.x/blade#components), [Directives](https://laravel.com/docs/8.x/blade#blade-directives) and your custom if statements.
+You can use the power of Blade like [Layouts](https://laravel.com/docs/9.x/blade#building-layouts), [Forms](https://laravel.com/docs/9.x/blade#forms), [Sub-Views](https://laravel.com/docs/9.x/blade#including-subviews), [Components](https://laravel.com/docs/9.x/blade#components), [Directives](https://laravel.com/docs/9.x/blade#blade-directives) and your custom if statements.
 
-All the documentation about Laravel Blade is in the [official documentation](https://laravel.com/docs/8.x/blade).
+All the documentation about Laravel Blade is in the [official documentation](https://laravel.com/docs/9.x/blade).
 
 ## Options
 
@@ -58,25 +88,6 @@ Default templates folder is `site/templates` directory or wherever you define yo
 
 ```php
 'afbora.blade.templates' => '/theme/default/templates',
-```
-
-You can find Kirby Starterkit blade templates in repository `/templates` folder.
-
-```
-├── layouts
-│   └── default.blade.php
-├── partials
-│   ├── album.blade.php
-│   ├── image.blade.php
-│   ├── note.blade.php
-│   └── photography.blade.php
-├── about.blade.php
-├── album.blade.php
-├── default.blade.php
-├── home.blade.php
-├── note.blade.php
-├── notes.blade.php
-└── photography.blade.php
 ```
 
 ### Views
@@ -167,10 +178,6 @@ After declaration you can use it like:
 @endlogged
 ```
 
-### Filters
-
-**Breaking Change: After the 1.6 version, the filters feature has been removed. Use 1.5.x to use filters.**
-
 ### Minify
 
 **Setup**
@@ -212,5 +219,3 @@ After declaration you can use it like:
 | doRemoveOmittedQuotes | remove quotes e.g. class="lall" => class=lall |
 | doRemoveOmittedHtmlTags | remove ommitted html tags e.g. \<p\>lall\<\/p\> => \<p\>lall |
 You can get detailed information from `HtmlMin` library: [voku/HtmlMin](https://github.com/voku/HtmlMin#options)
-
-*Developed from [Kirby Blade Repository](https://github.com/beebmx/kirby-blade) maintained by [@beebmx](https://github.com/beebmx)*
