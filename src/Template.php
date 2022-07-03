@@ -94,7 +94,13 @@ class Template extends KirbyTemplate
 
             foreach ($options as $option => $status) {
                 if (method_exists($htmlMin, $option)) {
-                    $htmlMin->{$option}((bool)$status);
+                    if ($option === 'doMakeSameDomainsLinksRelative') {
+                        if (is_string($status) || is_array($status)) {
+                            $htmlMin->{$option}($status);
+                        }
+                    } else {
+                        $htmlMin->{$option}((bool)$status);
+                    }
                 }
             }
             return $htmlMin->minify($html);
