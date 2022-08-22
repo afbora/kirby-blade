@@ -2,7 +2,7 @@
 
 Update: 27 June 2022
 
-There is now an official fork of Laravel Breadcrumbs:
+There is now an official fork of Laravel Blade:
 
 https://github.com/lukasleitsch/kirby-blade
 
